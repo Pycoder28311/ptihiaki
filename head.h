@@ -5,7 +5,8 @@
 
 #define EULER 0.57721566490153286060651209
 #define PI 3.14159265358979323846
-#define NPOINTS 10000 
+#define I_NPOINTS 10000 
+#define EPS_BESSEL 1e-8  
 
 // Bessel functions
 double J_n(double n, double x);
@@ -43,5 +44,12 @@ void getCofactor(double **mat, double **temp, int p, int q, int n);
 double determinant(double **mat, int n);
 double complex determinant_complex(double complex **mat, int N);
 double complex **create_matrix(int N_mtx, double k_perp);
+
+double f(double x, int n_max);
+double brent(double a, double b, double tol, int n_max);
+int find_roots(double xmin, double xmax, double dx, double tol, double tol_zero, double *roots, int max_roots, int n_max);
+
+int delta(int n, int q);
+double k_of_n(int n, int m);
 
 #endif

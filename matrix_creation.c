@@ -111,7 +111,7 @@ double complex **create_matrix(int N_mtx, double k_perp) {
             else
                 M[n][q] = Znq_val;
 
-            printf("M[%d][%d] = %.10lf + %.10lfi\n", n, q, creal(M[n][q]), cimag(M[n][q]));
+            //printf("M[%d][%d] = %.10lf + %.10lfi\n", n, q, creal(M[n][q]), cimag(M[n][q]));
         }
     }
 

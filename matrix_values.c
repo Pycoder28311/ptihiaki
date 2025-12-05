@@ -4,29 +4,15 @@
 #include <math.h>
 #include <complex.h>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-#define NPOINTS 10000  // number of points for numerical integration
-
-int delta(int n, int q) {
-    return (n == q) ? 1 : 0;
-}
-
-double k_of_n(int n, int m) {
-    return m + n * N;
-}
-
 double complex I_integral(double alpha, double beta, double phi1, double phi2) {
     double complex sum = 0.0 + 0.0*I;
-    double dphi = (phi2 - phi1) / NPOINTS;
+    double dphi = (phi2 - phi1) / I_NPOINTS;
     double phi;
 
-    for (int i = 0; i <= NPOINTS; i++) {
+    for (int i = 0; i <= I_NPOINTS; i++) {
         phi = phi1 + i * dphi;
         double weight = 1.0;
-        if (i == 0 || i == NPOINTS) weight = 0.5;  // trapezoid endpoints
+        if (i == 0 || i == I_NPOINTS) weight = 0.5;  // trapezoid endpoints
         sum += weight * cexp(I * alpha * phi) * cos(beta * (phi - phi1)) * dphi;
     }
     return sum;
@@ -59,6 +45,7 @@ double complex Z_nq(double q, double n, double m, double k_perp) {
 
     double complex Sum = S(k_perp, k_q, k_n);
     double Fkq = F_n(k_q, k_perp, a);  // F_{k_q}(k_perp alpha)
+    //printf("F_kq(%lf) = %.10lf\n", k_q, Fkq);
 
     return (2.0 * Fkq * Sum) / phi_c;
 }

@@ -7,7 +7,6 @@
 extern int N;          // Number of angular modes
 
 // --- Physical parameters ---
-extern double k_perp;
 extern double D;
 extern double a;
 

@@ -2,10 +2,7 @@
 #include "globals.h"
 #include <math.h>
 #include <complex.h>
-
-#define MAXITER 50
-#define GAMMA 0.577215664901532860606512
-#define EPS 1e-8  
+#include <stdio.h>
 
 // Jn(x) using Taylor series
 double J_n(double n, double x) {
@@ -22,7 +19,7 @@ double J_n(double n, double x) {
 double Y_n(double n, double x) {
     if (x == 0) return -INFINITY; // Y_n(0) -> -∞
     double Jn = J_n(n, x);
-    double n_eps = n + EPS; // μικρή μετατόπιση για limit
+    double n_eps = n + EPS_BESSEL; // μικρή μετατόπιση για limit
     double Jn_eps = J_n(n_eps, x);
     double Jneg_eps = J_n(-n_eps, x);
     return (Jn_eps * cos(n_eps * PI) - Jneg_eps) / sin(n_eps * PI);
@@ -41,7 +38,7 @@ double I_n(double n, double x) {
 // Modified Bessel K_v(x) για δεκαδικό v
 double K_n(double n, double x) {
     if (x == 0.0) return 1e300;  // K_n(0) -> πολύ μεγάλο
-    double n_eps = n + EPS;
+    double n_eps = n + EPS_BESSEL;
     double Ipos = I_n(n_eps, x);
     double Ineg = I_n(-n_eps, x);
     return (PI / 2.0) * (Ineg - Ipos) / sin(n_eps * PI);
