@@ -148,7 +148,7 @@ int main() {
 
 
 
-    int n_max = 2;
+    int n_max = 3;
     int N_mtx = 2*n_max + 1; //Το μέγεθος του Πίνακα
 
     // --- CREATE MATRIX USING VARIABLES ---
