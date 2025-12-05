@@ -2,11 +2,14 @@
 #define HEAD_H
 
 #include <complex.h>
+#include <stdio.h>
 
 #define EULER 0.57721566490153286060651209
 #define PI 3.14159265358979323846
 #define I_NPOINTS 10000 
 #define EPS_BESSEL 1e-8  
+#define MAX_ITER 1000
+#define TOL 1e-10
 
 // Bessel functions
 double J_n(double n, double x);
@@ -51,5 +54,15 @@ int find_roots(double xmin, double xmax, double dx, double tol, double tol_zero,
 
 int delta(int n, int q);
 double k_of_n(int n, int m);
+
+// Eigenvalue functions
+void mat_vec_mul(int N, double **A, double *x, double *y);
+double norm(int N, double *v);
+void power_iteration(int N, double **A, double *eigvec, double *eigval);
+void deflate_matrix(int N, double **A, double *eigvec, double eigval);
+void find_all_eigenvalues(int N, double complex **A, FILE *fp);
+
+// Compute determinant and eigenvalues
+void compute_matrix_determinant(int n_max, double k_perp, FILE *fp);
 
 #endif

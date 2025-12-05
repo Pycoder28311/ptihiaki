@@ -44,8 +44,7 @@ double complex Z_nq(double q, double n, double m, double k_perp) {
     double k_q = k_of_n(q, m); 
 
     double complex Sum = S(k_perp, k_q, k_n);
-    double Fkq = F_n(k_q, k_perp, a);  // F_{k_q}(k_perp alpha)
-    //printf("F_kq(%lf) = %.10lf\n", k_q, Fkq);
+    double Fkq = F_n(k_q, k_perp, a); 
 
     return (2.0 * Fkq * Sum) / phi_c;
 }
