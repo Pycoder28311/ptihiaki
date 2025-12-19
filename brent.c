@@ -23,6 +23,7 @@ double f(double k_perp, int n_max) {
 
     // Compute determinant
     double complex det = determinant_complex(M_ptrs, N_mtx);
+    //printf("Debug: For k_perp = %.12f, Determinant = %.10lf + %.10lf i\n", k_perp, creal(det), cimag(det));
 
     // Free memory
     for (int i = 0; i < N_mtx; i++)
@@ -34,7 +35,7 @@ double f(double k_perp, int n_max) {
 }
 
 double f_Other(double k_perp, int n_max) {
-    return k_perp - 1;  // or cabs(det) if you want magnitude
+    return k_perp - 1.0;  // or cabs(det) if you want magnitude
 }
 
 double brent(double a, double b, double tol, int n_max) {
@@ -45,6 +46,7 @@ double brent(double a, double b, double tol, int n_max) {
 
     double c = a, fc = fa;
     double d = b - a, e = d;
+    //printf("Debug: Starting Brent's method with a=%.12f (f=%.12e), b=%.12f (f=%.12e)\n", a, fa, b, fb);
 
     while (1) {
         if (fabs(fc) < fabs(fb)) {
@@ -53,7 +55,9 @@ double brent(double a, double b, double tol, int n_max) {
         }
 
         double m = 0.5 * (c - b);
-        double toler = 2.0 * tol * fmax(1.0, fabs(b));
+        //printf("Debug: Current interval [%.20f, %.20f], m=%.20f, fb=%.12f %12f\n", b, c, m, f(b,n_max), f(c, n_max));
+        double toler = 0.00001 * tol * fmax(1.0, fabs(b));
+        //printf("Debug: Tolerance = %.20f\n", toler);
 
         if (fabs(m) <= toler || fb == 0.0) return b;
 
@@ -111,13 +115,15 @@ int find_roots(double xmin, double xmax, double dx, double tol, double tol_zero,
         double x2 = x + dx;
         if (x2 > xmax) x2 = xmax;
         double fx2 = f(x2, n_max);
+        printf("Debug: Scanning interval [%.12f, %.12f] with f(x) = %.12e, f(x2) = %.12e %12f\n", x, x2, fx, fx2, tol_zero);
 
         if (fabs(fx) <= tol_zero) {
-            if (found == 0 || fabs(roots[found-1] - x) > tol*10) {
+            if (found == 0 || fabs(roots[found-1] - x) > tol*0.001) {
                 roots[found++] = x;
             }
         } else if (fx * fx2 < 0.0) {
             double r = brent(x, x2, tol, n_max);
+            printf("Debug: Found root at x = %.30f with f(x) = %.12e\n", r, f(r, n_max));
             if (!isnan(r)) {
                 int dup = 0;
                 for (int k = 0; k < found; ++k) {
@@ -128,7 +134,7 @@ int find_roots(double xmin, double xmax, double dx, double tol, double tol_zero,
         }
 
         if (fabs(fx2) <= tol_zero) {
-            if (found == 0 || fabs(roots[found-1] - x2) > tol*10) {
+            if (found == 0 || fabs(roots[found-1] - x2) > tol*0.001) {
                 roots[found++] = x2;
             }
         }

@@ -16,5 +16,6 @@ extern double phi_c;
 
 // --- Series limit ---
 extern int Lmax;
+extern double v; // Wave speed (m/s)
 
 #endif

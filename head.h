@@ -6,9 +6,9 @@
 
 #define EULER 0.57721566490153286060651209
 #define PI 3.14159265358979323846
-#define I_NPOINTS 10000 
+#define I_NPOINTS 10000
 #define EPS_BESSEL 1e-8  
-#define MAX_ITER 1000
+#define MAX_ITER 10000
 #define TOL 1e-10
 
 // Bessel functions

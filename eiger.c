@@ -107,6 +107,14 @@ void compute_matrix_determinant(int n_max, double k_perp, FILE *fp) {
         fprintf(stderr, "Error: Could not allocate matrix.\n");
         return;
     }
+    fprintf(fp, "Matrix values (row x column):\n");
+    for (int i = 0; i < N_mtx; i++) {
+        for (int j = 0; j < N_mtx; j++) {
+            fprintf(fp, "(% .6lf + % .6lfi)  ", creal(M_full[i][j]), cimag(M_full[i][j]));
+        }
+        fprintf(fp, "\n");
+    }
+
     double complex *M_ptrs[N_mtx];
     for (int i = 0; i < N_mtx; i++)
         M_ptrs[i] = M_full[i];
@@ -114,8 +122,6 @@ void compute_matrix_determinant(int n_max, double k_perp, FILE *fp) {
     // Compute determinant
     double complex det = determinant_complex(M_ptrs, N_mtx);
     fprintf(fp, "Determinant for check = %.10lf + %.10lf i\n", creal(det), cimag(det));
-
-
 
     // --- CREATE SUBMATRIX (excluding last row and column) ---
     double complex **M = malloc(sub_N * sizeof(double complex *));
