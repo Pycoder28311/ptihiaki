@@ -1,10 +1,8 @@
 #include <math.h>
+#include "constants.h"
 
-#define eps 1e-15
-#define el  0.5772156649015328606   /* Euler–Mascheroni */
-#ifndef M_PI_2
-#define M_PI_2 1.57079632679489661923
-#endif
+int msta1(double x, int mp); // Υποθέτουμε ότι έχεις τις συναρτήσεις msta1/msta2 σε C
+int msta2(double x, int n, int mp);
 
 int bessik01a(double x,
               double *i0, double *i1,
@@ -79,7 +77,7 @@ int bessik01a(double x,
         for (k = 1; k <= 50; k++) {
             r *= 0.25 * x2 / (k * k);
             *i0 += r;
-            if (fabs(r / (*i0)) < eps) break;
+            if (fabs(r / (*i0)) < EPS) break;
         }
 
         *i1 = 1.0;
@@ -87,7 +85,7 @@ int bessik01a(double x,
         for (k = 1; k <= 50; k++) {
             r *= 0.25 * x2 / (k * (k + 1));
             *i1 += r;
-            if (fabs(r / (*i1)) < eps) break;
+            if (fabs(r / (*i1)) < EPS) break;
         }
         *i1 *= 0.5 * x;
     }
@@ -112,7 +110,7 @@ int bessik01a(double x,
 
     /* K0 */
     if (x <= 9.0) {
-        ct = -(log(0.5 * x) + el);
+        ct = -(log(0.5 * x) + EL);
         *k0 = 0.0;
         w0 = 0.0;
         r = 1.0;
@@ -122,7 +120,7 @@ int bessik01a(double x,
             w0 += 1.0 / k;
             r *= 0.25 * x2 / (k * k);
             *k0 += r * (w0 + ct);
-            if (fabs((*k0 - ww) / (*k0)) < eps) break;
+            if (fabs((*k0 - ww) / (*k0)) < EPS) break;
             ww = *k0;
         }
         *k0 += ct;
@@ -238,7 +236,7 @@ int bessikna(int n, double x, int *nm,
 
     if ((x < 0.0) || (n < 0)) return 1;
 
-    if (x < eps) {
+    if (x < EPS) {
         for (k = 0; k <= n; k++) {
             in[k]  = 0.0;
             kn[k]  = 1.0e300;
@@ -326,7 +324,7 @@ int bessiknb(int n, double x, int *nm,
 
     if ((x < 0.0) || (n < 0)) return 1;
 
-    if (x < eps) {
+    if (x < EPS) {
         for (k = 0; k <= n; k++) {
             in[k]  = 0.0;
             kn[k]  = 1.0e300;
@@ -368,7 +366,7 @@ int bessiknb(int n, double x, int *nm,
 
     /* K0, K1 */
     if (x <= 8.0) {
-        kn[0] = -(log(0.5 * x) + el) * in[0] + s0 * sk0;
+        kn[0] = -(log(0.5 * x) + EL) * in[0] + s0 * sk0;
         kn[1] = (1.0 / x - in[1] * kn[0]) / in[0];
     }
     else {

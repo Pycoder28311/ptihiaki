@@ -1,15 +1,8 @@
 #include <complex.h>
 #include <math.h>
 #include <stdio.h>
-
-#define eps 1e-15
-#define cone 1.0 + 0.0*I
-#define czero 0.0 + 0.0*I
-#define el 0.57721566490153286060651209
-#define cii 1.0*I
-#define M_PI 3.14159265358979323846
-#define M_PI_4 (M_PI/4.0)
-#define M_2_PI (2.0/M_PI)
+#include <stdlib.h>
+#include "constants.h"
 
 int cbessik01(double complex z,
               double complex *ci0, double complex *ci1,
@@ -46,11 +39,11 @@ int cbessik01(double complex z,
     z1 = z;
 
     if (a0 == 0.0) {
-        *ci0 = cone;
-        *ci1 = czero;
+        *ci0 = CONE;
+        *ci1 = CZERO;
         *ck0 = 1e308 + 0.0*I;
         *ck1 = 1e308 + 0.0*I;
-        *ci0p = czero;
+        *ci0p = CZERO;
         *ci1p = 0.5 + 0.0*I;
         *ck0p = -1e308 + 0.0*I;
         *ck1p = -1e308 + 0.0*I;
@@ -60,20 +53,20 @@ int cbessik01(double complex z,
     if (creal(z) < 0.0) z1 = -z;
 
     if (a0 <= 18.0) {
-        *ci0 = cone;
-        cr = cone;
+        *ci0 = CONE;
+        cr = CONE;
         for (k = 1; k <= 50; k++) {
             cr *= 0.25*z2/(double)(k*k);
             *ci0 += cr;
-            if (cabs(cr / *ci0) < eps) break;
+            if (cabs(cr / *ci0) < EPS) break;
         }
 
-        *ci1 = cone;
-        cr = cone;
+        *ci1 = CONE;
+        cr = CONE;
         for (k = 1; k <= 50; k++) {
             cr *= 0.25*z2/(double)(k*(k+1));
             *ci1 += cr;
-            if (cabs(cr / *ci1) < eps) break;
+            if (cabs(cr / *ci1) < EPS) break;
         }
         *ci1 *= 0.5*z1;
     }
@@ -83,14 +76,14 @@ int cbessik01(double complex z,
         else kz = 12;
 
         ca = cexp(z1)/csqrt(2.0*M_PI*z1);
-        *ci0 = cone;
+        *ci0 = CONE;
         zr = 1.0/z1;
         for (k = 0; k < kz; k++) {
             *ci0 += a[k]*cpow(zr,k+1.0);
         }
         *ci0 *= ca;
 
-        *ci1 = cone;
+        *ci1 = CONE;
         for (k = 0; k < kz; k++) {
             *ci1 += b[k]*cpow(zr,k+1.0);
         }
@@ -98,15 +91,15 @@ int cbessik01(double complex z,
     }
 
     if (a0 <= 9.0) {
-        cs = czero;
-        ct = -clog(0.5*z1)-el;
+        cs = CZERO;
+        ct = -clog(0.5*z1)-EL;
         w0 = 0.0;
-        cr = cone;
+        cr = CONE;
         for (k = 1; k <= 50; k++) {
             w0 += 1.0/k;
             cr *= 0.25*z2/(double)(k*k);
             cs += cr*(w0+ct);
-            if (cabs((cs-cw)/cs) < eps) break;
+            if (cabs((cs-cw)/cs) < EPS) break;
             cw = cs;
         }
         *ck0 = ct + cs;
@@ -114,7 +107,7 @@ int cbessik01(double complex z,
     else {
         cb = 0.5/z1;
         zr2 = 1.0/z2;
-        *ck0 = cone;
+        *ck0 = CONE;
         for (k = 0; k < 10; k++) {
             *ck0 += a1[k]*cpow(zr2,k+1.0);
         }
@@ -125,11 +118,11 @@ int cbessik01(double complex z,
 
     if (creal(z) < 0.0) {
         if (cimag(z) < 0.0) {
-            *ck0 += cii*M_PI*(*ci0);
-            *ck1 = -(*ck1) + cii*M_PI*(*ci1);
+            *ck0 += CII*M_PI*(*ci0);
+            *ck1 = -(*ck1) + CII*M_PI*(*ci1);
         } else if (cimag(z) > 0.0) {
-            *ck0 -= cii*M_PI*(*ci0);
-            *ck1 = -(*ck1) - cii*M_PI*(*ci1);
+            *ck0 -= CII*M_PI*(*ci0);
+            *ck1 = -(*ck1) - CII*M_PI*(*ci1);
         }
         *ci1 = -(*ci1);
     }
@@ -158,9 +151,9 @@ int cbessikna(int n, double complex z, int *nm,
 
     if (a0 < 1.0e-100) {
         for (k = 0; k <= n; k++) {
-            ci[k] = czero;
+            ci[k] = CZERO;
             ck[k] = -1e308 + 0.0*I;
-            cip[k] = czero;
+            cip[k] = CZERO;
             ckp[k] = 1e308 + 0.0*I;
         }
         ci[0] = 1e308 + 0.0*I;
@@ -180,7 +173,7 @@ int cbessikna(int n, double complex z, int *nm,
     if (m < n) *nm = m;
     else m = msta2(a0, n, 15);
 
-    cf2 = czero;
+    cf2 = CZERO;
     cf1 = 1.0e-100 + 0.0*I;
 
     for (k = m; k >= 0; k--) {
@@ -212,9 +205,6 @@ int cbessikna(int n, double complex z, int *nm,
     return 0;
 }
 
-#define M_PI_2 1.5707963267948966
-extern double el; // Euler-Mascheroni constant
-
 int cbessiknb(int n, double complex z, int *nm,
               double complex *ci, double complex *ck,
               double complex *cip, double complex *ckp)
@@ -229,9 +219,9 @@ int cbessiknb(int n, double complex z, int *nm,
 
     if (a0 < 1.0e-100) {
         for (k = 0; k <= n; k++) {
-            ci[k] = czero;
+            ci[k] = CZERO;
             ck[k] = 1e308 + 0.0*I;
-            cip[k] = czero;
+            cip[k] = CZERO;
             ckp[k] = -1e308 + 0.0*I;
         }
         ci[0] = 1.0 + 0.0*I;
@@ -248,9 +238,9 @@ int cbessiknb(int n, double complex z, int *nm,
     if (m < *nm) *nm = m;
     else m = msta2(a0, *nm, 15);
 
-    cbs = czero;
-    csk0 = czero;
-    cf0 = czero;
+    cbs = CZERO;
+    csk0 = CZERO;
+    cf0 = CZERO;
     cf1 = 1.0e-100 + 0.0*I;
 
     for (k = m; k >= 0; k--) {
@@ -266,7 +256,7 @@ int cbessiknb(int n, double complex z, int *nm,
     for (k = 0; k <= *nm; k++) ci[k] *= cs0;
 
     if (a0 <= 9.0) {
-        ck[0] = -(clog(0.5*z1) + el)*ci[0] + cs0*csk0;
+        ck[0] = -(clog(0.5*z1) + EL)*ci[0] + cs0*csk0;
         ck[1] = (1.0/z1 - ci[1]*ck[0])/ci[0];
     } else {
         ca0 = csqrt(M_PI_2/z1)*cexp(-z1);
@@ -276,9 +266,9 @@ int cbessiknb(int n, double complex z, int *nm,
         else kz = 16;
 
         for (l = 0; l < 2; l++) {
-            cbkl = cone;
+            cbkl = CONE;
             vt = 4.0*l;
-            cr = cone;
+            cr = CONE;
             for (k = 1; k <= kz; k++) {
                 cr *= 0.125*(vt - pow(2.0*k-1.0,2.0))/((double)k*z);
                 cbkl += cr;
@@ -300,9 +290,9 @@ int cbessiknb(int n, double complex z, int *nm,
         fac = 1.0;
         for (k = 0; k <= *nm; k++) {
             if (cimag(z) < 0.0) {
-                ck[k] = fac*ck[k] + cii*M_PI*ci[k];
+                ck[k] = fac*ck[k] + CII*M_PI*ci[k];
             } else {
-                ck[k] = fac*ck[k] - cii*M_PI*ci[k];
+                ck[k] = fac*ck[k] - CII*M_PI*ci[k];
             }
             ci[k] *= fac;
             fac = -fac;
@@ -318,8 +308,6 @@ int cbessiknb(int n, double complex z, int *nm,
 
     return 0;
 }
-
-#define MAXN 301
 
 // === Υπολογισμός Bessel I_n(z) από cbessikna ===
 double complex besI(int n, double complex z) {
@@ -338,10 +326,10 @@ double complex besIa(int n, double complex z) {
     for(int i = 1; i <= 100; i++) {
         term = -term * ((double)m - pow(2.0*i-1.0, 2.0)) / (z * 8.0 * (double)i);
         sum += term;
-        if(cabs(term/sum) < eps) break;
+        if(cabs(term/sum) < EPS) break;
     }
 
-    return sum / csqrt(2.0 * PI * z);
+    return sum / csqrt(2.0 * M_PI * z);
 }
 
 double complex besII(int n, double complex z) {
@@ -361,7 +349,7 @@ double complex besIIa(int n, double complex z) {
 double complex besK(int n, double complex z)
 {
         double complex bsi[301],bsk[301],bsii[301],bskk[301];
-        cbessikna(n,z,n,bsi,bsk,bsii,bskk);
+        cbessikna(n,z,&n,bsi,bsk,bsii,bskk);
         return bsk[n];
 }
 
@@ -374,7 +362,7 @@ double complex besKa(int n, double complex z)
         
         for(int i=1;i<=100;i++)
         {
-                term=term*(double(m)-pow(2.0*i-1.0,2.0))/(z*8.0*double(i));
+                term = term * ((double)m - pow(2.0*(double)i - 1.0, 2.0)) / (z * 8.0 * (double)i);
                 sum+=term;
                 if(abs(term/sum)<1.e-16) break;
         }

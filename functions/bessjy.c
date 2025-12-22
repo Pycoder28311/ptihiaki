@@ -1,9 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
-
-#define M_PI_4 0.78539816339744830962
-#define M_2_PI 0.63661977236758134308
-#define el 0.5772156649015328606  /* Euler-Mascheroni */
+#include "constants.h"
 
 int bessjy01a(double x,
               double *j0, double *j1,
@@ -108,7 +105,7 @@ int bessjy01a(double x,
         }
         *j1 *= 0.5*x;
 
-        ec = log(0.5*x) + el;
+        ec = log(0.5*x) + EL;
 
         cs0 = 0.0;
         w0 = 0.0;

@@ -1,11 +1,6 @@
 #include <complex.h>
 #include <math.h>
-
-static const double complex cii = 0.0 + 1.0*I;
-static const double complex cone = 1.0 + 0.0*I;
-static const double complex czero = 0.0 + 0.0*I;
-static const double eps = 1e-16;
-static const double el = 0.5772156649015329; // Euler-Mascheroni
+#include "constants.h"
 
 int cbessjy01(double complex z,
               double complex *cj0, double complex *cj1,
@@ -51,11 +46,11 @@ int cbessjy01(double complex z,
     z1 = z;
 
     if (a0 == 0.0) {
-        *cj0 = cone;
-        *cj1 = czero;
+        *cj0 = CONE;
+        *cj1 = CZERO;
         *cy0 = -1e308 + 0.0*I;
         *cy1 = -1e308 + 0.0*I;
-        *cj0p = czero;
+        *cj0p = CZERO;
         *cj1p = 0.5 + 0.0*I;
         *cy0p = 1e308 + 0.0*I;
         *cy1p = 1e308 + 0.0*I;
@@ -65,52 +60,52 @@ int cbessjy01(double complex z,
     if (creal(z) < 0.0) z1 = -z;
 
     if (a0 <= 12.0) {
-        *cj0 = cone;
-        cr = cone;
+        *cj0 = CONE;
+        cr = CONE;
         for (k=1; k<=40; k++) {
             cr *= -0.25*z2/(double)(k*k);
             *cj0 += cr;
-            if (cabs(cr) < cabs(*cj0)*eps) break;
+            if (cabs(cr) < cabs(*cj0)*EPS) break;
         }
-        *cj1 = cone;
-        cr = cone;
+        *cj1 = CONE;
+        cr = CONE;
         for (k=1; k<=40; k++) {
             cr *= -0.25*z2/(k*(k+1.0));
             *cj1 += cr;
-            if (cabs(cr) < cabs(*cj1)*eps) break;
+            if (cabs(cr) < cabs(*cj1)*EPS) break;
         }
         *cj1 *= 0.5*z1;
 
         w0 = 0.0;
-        cr = cone;
-        cs = czero;
+        cr = CONE;
+        cs = CZERO;
         for (k=1; k<=40; k++) {
             w0 += 1.0/k;
             cr *= -0.25*z2/(double)(k*k);
             cp = cr*w0;
             cs += cp;
-            if (cabs(cp) < cabs(cs)*eps) break;
+            if (cabs(cp) < cabs(cs)*EPS) break;
         }
-        *cy0 = (2.0/M_PI)*((log(0.5*z1)+el)*(*cj0) - cs);
+        *cy0 = (2.0/M_PI)*((log(0.5*z1)+EL)*(*cj0) - cs);
 
         w1 = 0.0;
-        cr = cone;
-        cs = cone;
+        cr = CONE;
+        cs = CONE;
         for (k=1; k<=40; k++) {
             w1 += 1.0/k;
             cr *= -0.25*z2/(k*(k+1.0));
             cp = cr*(2.0*w1 + 1.0/(k+1.0));
             cs += cp;
-            if (cabs(cp) < cabs(cs)*eps) break;
+            if (cabs(cp) < cabs(cs)*EPS) break;
         }
-        *cy1 = (2.0/M_PI)*((log(0.5*z1)+el)*(*cj1) - 1.0/z1 - 0.25*z1*cs);
+        *cy1 = (2.0/M_PI)*((log(0.5*z1)+EL)*(*cj1) - 1.0/z1 - 0.25*z1*cs);
     } else {
         if (a0 >= 50.0) kz = 8;
         else if (a0 >= 35.0) kz = 10;
         else kz = 12;
 
         ct1 = z1 - M_PI_4;
-        cp0 = cone;
+        cp0 = CONE;
         for (k=0; k<kz; k++) cp0 += a[k]*cpow(z1,-2.0*k-2.0);
 
         cq0 = -0.125/z1;
@@ -121,7 +116,7 @@ int cbessjy01(double complex z,
         *cy0 = cu*(cp0*csin(ct1) + cq0*ccos(ct1));
 
         ct2 = z1 - 0.75*M_PI;
-        cp1 = cone;
+        cp1 = CONE;
         for (k=0; k<kz; k++) cp1 += a1[k]*cpow(z1,-2.0*k-2.0);
 
         cq1 = 0.375/z1;
@@ -133,11 +128,11 @@ int cbessjy01(double complex z,
 
     if (creal(z) < 0.0) {
         if (cimag(z) < 0.0) {
-            *cy0 -= 2.0*cii*(*cj0);
-            *cy1 = -(*cy1 - 2.0*cii*(*cj1));
+            *cy0 -= 2.0*CII*(*cj0);
+            *cy1 = -(*cy1 - 2.0*CII*(*cj1));
         } else if (cimag(z) > 0.0) {
-            *cy0 += 2.0*cii*(*cj0);
-            *cy1 = -(*cy1 + 2.0*cii*(*cj1));
+            *cy0 += 2.0*CII*(*cj0);
+            *cy1 = -(*cy1 + 2.0*CII*(*cj1));
         }
         *cj1 = -(*cj1);
     }
@@ -149,11 +144,8 @@ int cbessjy01(double complex z,
 
     return 0;
 }
-
-static const double complex cone = 1.0 + 0.0*I;
-
-int msta1(double a0, int max) { /* Υλοποίηση κατάλληλη */ return max; }
-int msta2(double a0, int n, int m) { /* Υλοποίηση κατάλληλη */ return n; }
+int msta1(double x, int mp);
+int msta2(double x, int n, int mp);
 
 int cbessjyna(int n, double complex z, int *nm,
               double complex *cj, double complex *cy,
@@ -173,12 +165,12 @@ int cbessjyna(int n, double complex z, int *nm,
 
     if (a0 < 1.0e-100) {
         for (k=0; k<=n; k++) {
-            cj[k] = czero;
+            cj[k] = CZERO;
             cy[k] = -1e308 + 0.0*I;
-            cjp[k] = czero;
+            cjp[k] = CZERO;
             cyp[k] = 1e308 + 0.0*I;
         }
-        cj[0] = cone;
+        cj[0] = CONE;
         cjp[1] = 0.5 + 0.0*I;
         return 0;
     }
@@ -206,7 +198,7 @@ int cbessjyna(int n, double complex z, int *nm,
         if (m < n) *nm = m;
         else m = msta2(a0, n, 15);
 
-        cf2 = czero;
+        cf2 = CZERO;
         cf1 = 1.0e-100 + 0.0*I;
 
         for (k=m; k>=0; k--) {
@@ -244,8 +236,8 @@ int cbessjyna(int n, double complex z, int *nm,
     lb0 = 0;
     if ((lb > 4) && (cimag(z) != 0.0)) {
         while (lb != lb0) {
-            ch2 = cone;
-            ch1 = czero;
+            ch2 = CONE;
+            ch1 = CZERO;
             lb0 = lb;
 
             for (k=lb; k>=1; k--) {
@@ -256,8 +248,8 @@ int cbessjyna(int n, double complex z, int *nm,
             cp12 = ch0;
             cp22 = ch2;
 
-            ch2 = czero;
-            ch1 = cone;
+            ch2 = CZERO;
+            ch1 = CONE;
 
             for (k=lb; k>=1; k--) {
                 ch0 = 2.0*k*ch1/z - ch2;
@@ -332,12 +324,12 @@ int cbessjynb(int n, double complex z, int *nm,
 
     if (a0 < 1.0e-100) {
         for (k = 0; k <= n; k++) {
-            cj[k] = czero;
+            cj[k] = CZERO;
             cy[k] = -1e308 + 0.0*I;
-            cjp[k] = czero;
+            cjp[k] = CZERO;
             cyp[k] = 1e308 + 0.0*I;
         }
-        cj[0] = cone;
+        cj[0] = CONE;
         cjp[1] = 0.5 + 0.0*I;
         return 0;
     }
@@ -348,10 +340,10 @@ int cbessjynb(int n, double complex z, int *nm,
         if (m < *nm) *nm = m;
         else m = msta2(a0, *nm, 15);
 
-        cbs = czero;
-        csu = czero;
-        csv = czero;
-        cf2 = czero;
+        cbs = CZERO;
+        csu = CZERO;
+        csv = CZERO;
+        cf2 = CZERO;
         cf1 = 1.0e-100 + 0.0*I;
 
         for (k = m; k >= 0; k--) {
@@ -378,12 +370,12 @@ int cbessjynb(int n, double complex z, int *nm,
 
         for (k = 0; k <= *nm; k++) cj[k] /= cs0;
 
-        ce = clog(0.5*z) + el;
+        ce = clog(0.5*z) + EL;
         cy[0] = M_2_PI*(ce*cj[0] - 4.0*csu/cs0);
         cy[1] = M_2_PI*(-cj[0]/z + (ce-1.0)*cj[1] - 4.0*csv/cs0);
     } else {
         ct1 = z - M_PI_4;
-        cp0 = cone;
+        cp0 = CONE;
         for (k = 0; k < 4; k++) cp0 += a[k]*cpow(z, -2.0*k-2.0);
 
         cq0 = -0.125/z;
@@ -396,7 +388,7 @@ int cbessjynb(int n, double complex z, int *nm,
         cy[0] = cby0;
 
         ct2 = z - 0.75*M_PI;
-        cp1 = cone;
+        cp1 = CONE;
         for (k = 0; k < 4; k++) cp1 += a1[k]*cpow(z, -2.0*k-2.0);
 
         cq1 = 0.375/z;
