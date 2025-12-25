@@ -12,7 +12,9 @@ extern double a, A,
               D,
               L,
               K, Kn, r,
-              nsp, tol, err, UNITLEN, LD;
+              tol, err, UNITLEN, LD;
+double nsp = 1.0;
+double eps = 1e-12;
 
 extern int Iresu, Jresu, M;
 extern int Nmax, Mmax;
@@ -27,10 +29,6 @@ void riza(double (*func)(double),
           double down, double up,
           double step1, double tol,
           int *nr, double rizes[])
-/*
-Uses zbrak to bracket the roots of the function,
-then zbrent to calculate them.
-*/
 {
     int nroot, nw, ier;
     int Nmaxt, Mmaxt;
@@ -62,18 +60,12 @@ then zbrent to calculate them.
 
             for (nw = 1; nw <= nroot; nw++) {
 
-                if (Iresu == 0)
-                    printf("Looking for roots in the interval..\n");
-
                 x1 = xb1[nw];
                 x2 = xb2[nw];
                 root = zbrent(func, x1, x2, tol);
 
                 if (root <= 0.0)
                     continue;
-
-                if (Iresu == 0)
-                    printf("Checking whether found solution is root or pole.\n");
 
                 fa = func(root - step / 20.0 / nsp);
                 fb = func(root);
@@ -89,31 +81,17 @@ then zbrent to calculate them.
                     (*nr)++;
                     rizes[*nr] = root;
                 }
-
-                if (Iresu == 0) printf("\n");
             }
-
-            if (Iresu == 0) printf("\n");
         }
-
-        if (Iresu == 0) printf("\n");
     }
-
-    return;
 }
+
 
 void zbrak(double (*fx)(double),
            double x1, double x2,
            int n,
            double xb1[], double xb2[],
            int *nb)
-/*
-Given a function fx defined on the interval [x1, x2], subdivide the interval into
-n equally spaced segments, and search for zero crossings of the function.
-
-nb is input as the maximum number of roots sought, and is reset to the number of
-bracketing pairs xb1[1..nb], xb2[1..nb] that are found.
-*/
 {
     int nbb, i;
     double x, fp, fc, dx;
@@ -127,10 +105,14 @@ bracketing pairs xb1[1..nb], xb2[1..nb] that are found.
         x += dx;
         fc = (*fx)(x);
 
+        if (fabs(fc) < eps) fc = 0.0;
+        if (fabs(fp) < eps) fp = 0.0;
+
         /* Detect sign change */
         if (fc * fp <= 0.0) {
             xb1[++nbb] = x - dx;
             xb2[nbb]   = x;
+
             if (*nb == nbb)
                 return;
         }
