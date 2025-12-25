@@ -225,7 +225,6 @@ double det_matrix(int N, double mat[N][N]) {
     // determinant = product of diagonal
     for (i = 0; i < N; i++)
         det *= A[i][i];
-
     return det;
 }
 
@@ -233,7 +232,112 @@ const double at = 1.0;       // example radius
 const double phi_ct = 1.0;   // angle parameter
 const double phi_it = 0.0;   // angle parameter
 const int lmax = 10;        // maximum l for sums
-const int N_MAX = 9;   // matrix dimension for real k
+const int N_MAX = 4;   // matrix dimension for real k
+
+void ludcmp(double complex **a, int n, int *indx, double *d);
+void lubksb(double complex **a, int n, int *indx, double complex b[]);
+void Sbrlse(double complex **z1a, double complex *b, int n, double complex x[]);
+
+double** create_mat_reduced(double complex k_perp) {
+    double mat[N_MAX][N_MAX];
+    int i, j;
+
+    // Fill the original matrix
+    for (int n = 0; n < N_MAX; n++) {
+        for (int q = 0; q < N_MAX; q++) {
+            double Znq = Z_nqt(n, q, k_perp, at, phi_ct, phi_it, lmax);
+            double Zn = Znt(phi_ct, k_perp, n, at);
+            mat[n][q] = Znq - delta(n, q) * Zn;
+        }
+    }
+
+    printf("Initial matrix (full):\n");
+    for (i = 0; i < N_MAX; i++) {
+        for (j = 0; j < N_MAX; j++) {
+            printf("%lf\t", mat[i][j]);
+        }
+        printf("\n");
+    }
+
+    double *b = malloc((N_MAX-1) * sizeof(double));
+    for (i = 1; i < N_MAX; i++) { // skip first row
+        b[i-1] = - mat[i][N_MAX-1]; // last column without first value
+    }
+
+    printf("\nVector b (last column without first value):\n");
+    for (i = 0; i < N_MAX-1; i++) {
+        printf("%lf\n", b[i]);
+    }
+
+    // Allocate reduced matrix (size (N_MAX-1)x(N_MAX-1))
+    double **reduced = malloc((N_MAX-1) * sizeof(double*));
+    for (i = 0; i < N_MAX-1; i++)
+        reduced[i] = malloc((N_MAX-1) * sizeof(double));
+
+    // Copy values excluding first row and last column
+    for (i = 1; i < N_MAX; i++) {        // start from 1 to skip first row
+        for (j = 0; j < N_MAX-1; j++) {  // skip last column
+            reduced[i-1][j] = mat[i][j];
+        }
+    }
+
+    for (int i = 0; i < N_MAX - 1; i++) {
+        for (int j = 0; j < N_MAX - 1; j++) {
+            printf("%lf\t", reduced[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Solve reduced*x = b using Gaussian elimination
+    double *x = malloc((N_MAX-1) * sizeof(double));
+    // Copy b to avoid modifying original
+    double *b_copy = malloc((N_MAX-1) * sizeof(double));
+    for (i = 0; i < N_MAX-1; i++) b_copy[i] = b[i];
+
+    // Gaussian elimination with partial pivoting
+    for (i = 0; i < N_MAX-1; i++) {
+        // Pivot
+        int max_row = i;
+        for (int k = i+1; k < N_MAX-1; k++)
+            if (fabs(reduced[k][i]) > fabs(reduced[max_row][i]))
+                max_row = k;
+
+        // Swap rows
+        double *temp_row = reduced[i];
+        reduced[i] = reduced[max_row];
+        reduced[max_row] = temp_row;
+
+        double temp_b = b_copy[i];
+        b_copy[i] = b_copy[max_row];
+        b_copy[max_row] = temp_b;
+
+        // Elimination
+        for (int k = i+1; k < N_MAX-1; k++) {
+            double factor = reduced[k][i] / reduced[i][i];
+            for (j = i; j < N_MAX-1; j++)
+                reduced[k][j] -= factor * reduced[i][j];
+            b_copy[k] -= factor * b_copy[i];
+        }
+    }
+
+    // Back substitution
+    for (i = N_MAX-2; i >= 0; i--) {
+        x[i] = b_copy[i];
+        for (j = i+1; j < N_MAX-1; j++)
+            x[i] -= reduced[i][j] * x[j];
+        x[i] /= reduced[i][i];
+    }
+
+    printf("\nSolution x:\n");
+    for (i = 0; i < N_MAX-1; i++)
+        printf("%lf\n", x[i]);
+
+    free(b);
+    free(b_copy);
+    free(x);
+
+    return reduced;
+}
 
 double compute_det_for_k_real(double k_real) {
     double complex k_perp = k_real + 0.0*I;
@@ -265,13 +369,13 @@ double confirm_det_for_k(double complex k_perp) {
     }
 
     // Optional: print the matrix
-    /*printf("Matrix (Z_nq - delta_nq * Z_n):\n");
+    printf("Matrix (Z_nq - delta_nq * Z_n):\n");
     for (int n = 0; n < N_MAX; n++) {
         for (int q = 0; q < N_MAX; q++) {
             printf("%10.6f ", matrix[n][q]);
         }
         printf("\n");
-    }*/
+    }
 
     // Compute determinant
     double det = det_matrix(N_MAX, matrix);
@@ -290,20 +394,29 @@ int main() {
     double roots[100];
 
     // Example: scan for real k from 0.0 to 20.0
-    riza(compute_det_for_k_real, 0.0, 100.0, 0.5, 1e-6, &nr, roots);
+    riza(compute_det_for_k_real, 0.0, 10.0, 0.1, 1e-6, &nr, roots);
+
+    for (int i = 0; i < nr; i++) { 
+        double k_real = roots[i]; 
+        double complex k_perp = k_real + 0.0*I; 
+        printf("Matrix for root %d (k_real = %g):", i+1, k_real);
+        double det = confirm_det_for_k(k_perp); 
+        printf("Determinant at root %d: %g\n", i+1, det); 
+    }
 
     printf("Found %d roots:\n", nr);
 
-    for (int i = 0; i < nr; i++) {
-        double k_real = roots[i];
+    if (nr > 2) {
+        double k_real = roots[2];
         double complex k_perp = k_real + 0.0*I;
 
-        printf("Matrix for root %d (k_real = %g):", i+1, k_real);
+        printf("Matrix for first root (k_real = %g):\n", k_real);
 
-        // Use your confirm_det_for_k to build and print the matrix
         double det = confirm_det_for_k(k_perp);
 
-        printf("Determinant at root %d: %g\n", i+1, det);
+        printf("Determinant at first root: %g\n", det);
+
+        create_mat_reduced(k_perp);
     }
 
     /*

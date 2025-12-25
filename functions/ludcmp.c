@@ -5,68 +5,49 @@
 #include "constants.h"
 #include "root.h"
 
-
 void ludcmp(double complex **a, int n, int *indx, double *d)
-/*
-Given a matrix a[1..n][1..n], this routine replaces it by the LU decomposition of
-a rowwise permutation of itself.
-*/
 {
-    int i, imax, j, k;
+    int i, j, k, imax = 0;
     double big, temp;
-    double complex dum, sum;
-    double *vv;  /* scaling of each row */
+    double complex sum, dum;
+    double *vv = (double *)malloc(n * sizeof(double));
 
-    vv = (double *)malloc(n * sizeof(double));
-    if (!vv) {
-        fprintf(stderr, "Memory allocation failed in ludcmp\n");
-        exit(1);
-    }
+    if (!vv) { fprintf(stderr, "Memory allocation failed\n"); exit(1); }
+    *d = 1.0;
 
-    *d = 1.0;       /* No row interchanges yet */
-
-    /* Loop over rows to get the implicit scaling information */
-    for (i = 1; i <= n; i++) {
+    // Compute scaling vector vv
+    for (i = 0; i < n; i++) {
         big = 0.0;
-        for (j = 1; j <= n; j++) {
-            temp = cabs(a[i][j]);
-            if (temp > big) big = temp;
-        }
-        if (big == 0.0)
-            nrerror("Singular matrix in routine ludcmp");
+        for (j = 0; j < n; j++)
+            if (cabs(a[i][j]) > big) big = cabs(a[i][j]);
+        if (big == 0.0) nrerror("Singular matrix");
         vv[i] = 1.0 / big;
+        printf("vv[%d] = %g\n", i, vv[i]);
     }
 
-    /* Loop over columns of Crout's method */
-    for (j = 1; j <= n; j++) {
-
-        for (i = 1; i < j; i++) {
+    for (j = 0; j < n; j++) {
+        for (i = 0; i < j; i++) {
             sum = a[i][j];
-            for (k = 1; k < i; k++)
-                sum -= a[i][k] * a[k][j];
+            for (k = 0; k < i; k++) sum -= a[i][k] * a[k][j];
             a[i][j] = sum;
         }
 
         big = 0.0;
-        for (i = j; i <= n; i++) {
+        for (i = j; i < n; i++) {
             sum = a[i][j];
-            for (k = 1; k < j; k++)
-                sum -= a[i][k] * a[k][j];
+            for (k = 0; k < j; k++) sum -= a[i][k] * a[k][j];
             a[i][j] = sum;
-
             temp = vv[i] * cabs(sum);
-            if (temp >= big) {
-                big = temp;
-                imax = i;
-            }
+            if (temp >= big) { big = temp; imax = i; }
         }
 
-        /* Pivoting */
+        printf("Column %d pivot row = %d\n", j, imax);
+
+        // Pivoting
         if (j != imax) {
-            for (k = 1; k <= n; k++) {
-                dum = a[imax][k];
-                a[imax][k] = a[j][k];
-                a[j][k] = dum;
+            printf("Swapping row %d with row %d\n", j, imax);
+            for (k = 0; k < n; k++) {
+                dum = a[imax][k]; a[imax][k] = a[j][k]; a[j][k] = dum;
             }
             *d = -(*d);
             vv[imax] = vv[j];
@@ -74,15 +55,26 @@ a rowwise permutation of itself.
 
         indx[j] = imax;
 
-        if (cabs(a[j][j]) == 0.0)
-            a[j][j] = TINY + 0.0 * I;
+        if (cabs(a[j][j]) == 0.0) a[j][j] = TINY + 0.0*I;
 
-        if (j != n) {
+        if (j != n-1) {
             dum = 1.0 / a[j][j];
-            for (i = j + 1; i <= n; i++)
-                a[i][j] *= dum;
+            for (i = j+1; i < n; i++) a[i][j] *= dum;
+        }
+
+        // Print matrix after column j
+        printf("Matrix after column %d:\n", j);
+        for (i = 0; i < n; i++) {
+            for (k = 0; k < n; k++)
+                printf("%8.4f ", creal(a[i][k]));
+            printf("\n");
         }
     }
+
+    // Print pivot vector
+    printf("Pivot vector indx: ");
+    for (i = 0; i < n; i++) printf("%d ", indx[i]);
+    printf("\n");
 
     free(vv);
 }
