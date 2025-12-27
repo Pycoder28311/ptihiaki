@@ -86,7 +86,6 @@ void riza(double (*func)(double),
     }
 }
 
-
 void zbrak(double (*fx)(double),
            double x1, double x2,
            int n,
