@@ -12,7 +12,7 @@ double complex I_integral(double alpha, double beta, double phi1, double phi2) {
     for (int i = 0; i <= I_NPOINTS; i++) {
         phi = phi1 + i * dphi;
         double weight = 1.0;
-        if (i == 0 || i == I_NPOINTS) weight = 0.5;  // trapezoid endpoints
+        if (i == 0 || i == I_NPOINTS) weight = 0.5;  
         sum += weight * cexp(I * alpha * phi) * cos(beta * (phi - phi1)) * dphi;
     }
     return sum;
@@ -28,8 +28,8 @@ double complex S(double k_perp, double k_q, double k_n) {
     for (int l = 0; l <= Lmax; l++) {
         double k_l = l * M_PI / phi_c; 
 
-        double Op_l_a = Op_l(l, k_perp, a);        // O'_l(k_perp a)
-        double O_l_a = O_l(l, k_perp, a);  // O_l(k_perp a)
+        double Op_l_a = Op_l(l, k_perp, a);       
+        double O_l_a = O_l(l, k_perp, a);  
         
         double complex I1 = I_integral(k_q, k_l, phi_i, phi_i + phi_c);
         double complex I2 = I_integral(-k_n, k_l, phi_i, phi_i + phi_c);
@@ -50,6 +50,6 @@ double complex Z_nq(double q, double n, double m, double k_perp) {
 }
 double complex Z_diff(int q, int n, double m, double k_perp) {
     double complex Znq = Z_nq(q, n, m, k_perp);
-    double complex Zn = Z_n(n, m, k_perp);  // Z_n
+    double complex Zn = Z_n(n, m, k_perp);  
     return Znq - delta(n,q) * Zn;
 }

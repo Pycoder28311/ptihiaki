@@ -15,7 +15,6 @@ void ludcmp(double complex **a, int n, int *indx, double *d)
     if (!vv) { fprintf(stderr, "Memory allocation failed\n"); exit(1); }
     *d = 1.0;
 
-    // Compute scaling vector vv
     for (i = 0; i < n; i++) {
         big = 0.0;
         for (j = 0; j < n; j++)
@@ -43,7 +42,6 @@ void ludcmp(double complex **a, int n, int *indx, double *d)
 
         printf("Column %d pivot row = %d\n", j, imax);
 
-        // Pivoting
         if (j != imax) {
             printf("Swapping row %d with row %d\n", j, imax);
             for (k = 0; k < n; k++) {
@@ -62,7 +60,6 @@ void ludcmp(double complex **a, int n, int *indx, double *d)
             for (i = j+1; i < n; i++) a[i][j] *= dum;
         }
 
-        // Print matrix after column j
         printf("Matrix after column %d:\n", j);
         for (i = 0; i < n; i++) {
             for (k = 0; k < n; k++)
@@ -71,7 +68,6 @@ void ludcmp(double complex **a, int n, int *indx, double *d)
         }
     }
 
-    // Print pivot vector
     printf("Pivot vector indx: ");
     for (i = 0; i < n; i++) printf("%d ", indx[i]);
     printf("\n");
@@ -81,16 +77,15 @@ void ludcmp(double complex **a, int n, int *indx, double *d)
 
 void lubksb(double complex **a, int n, int *indx, double complex b[])
 /*
-Solves the set of n linear equations A·X = B.
-a[1..n][1..n] is the LU decomposition of A (from ludcmp).
-indx[1..n] is the permutation vector.
-b[1..n] is input as B and overwritten by the solution X.
+Λύνει το σύστημα n γραμμικών εξισώσεων A·X = B.
+Το a[1..n][1..n] είναι η LU αποσύνθεση του πίνακα A (όπως προκύπτει από τη ludcmp).
+Το indx[1..n] είναι το διάνυσμα μεταθέσεων (permutation vector).
+Το b[1..n] δίνεται ως είσοδος ως το διάνυσμα B και αντικαθίσταται από τη λύση X.
 */
 {
     int i, ii = 0, ip, j;
     double complex sum;
 
-    /* Forward substitution */
     for (i = 1; i <= n; i++) {
         ip = indx[i];
         sum = b[ip];
@@ -106,7 +101,6 @@ b[1..n] is input as B and overwritten by the solution X.
         b[i] = sum;
     }
 
-    /* Back substitution */
     for (i = n; i >= 1; i--) {
         sum = b[i];
         for (j = i + 1; j <= n; j++)
@@ -116,13 +110,12 @@ b[1..n] is input as B and overwritten by the solution X.
 }
 
 void Sbrlse(double complex **z1a, double complex *b, int n, double complex x[])
-/* This function solves a linear system of equations */
+/* Αυτή η συνάρτηση λύνει ένα σύστημα γραμμικών εξισώσεων */
 {
     double complex a[205][205], bb[205], Csum;
     int i, i1, j, k, r, t, s, m, r1, n1, n0;
     double aa;
 
-    /* Copy input matrix */
     for (i = 1; i <= n; i++) {
         for (j = 1; j <= n; j++) {
             a[i][j] = z1a[i][j];
@@ -131,14 +124,12 @@ void Sbrlse(double complex **z1a, double complex *b, int n, double complex x[])
 
     n1 = n + 1;
 
-    /* Append RHS vector */
     for (i = 1; i <= n; i++) {
         a[i][n1] = b[i];
     }
 
     n0 = n - 1;
 
-    /* Forward elimination with partial pivoting */
     for (r = 1; r <= n0; r++) {
         aa = 0.0;
         k = r;
@@ -152,7 +143,6 @@ void Sbrlse(double complex **z1a, double complex *b, int n, double complex x[])
             k++;
         } while (k - 1 < n);
 
-        /* Row swap */
         for (s = r; s <= n1; s++) {
             bb[s] = a[r][s];
             a[r][s] = a[t][s];
@@ -168,7 +158,6 @@ void Sbrlse(double complex **z1a, double complex *b, int n, double complex x[])
         }
     }
 
-    /* Back substitution */
     x[n] = a[n][n1] / a[n][n];
 
     for (j = 1; j <= n0; j++) {

@@ -9,14 +9,14 @@
 #define NM (2*n_max + 1)
 
 static inline int IDX(int n) {
-    return n + n_max;   // maps [-n_max, +n_max] → [0, 2*n_max]
+    return n + n_max;   // Χάρτης από [-n_max, +n_max] σε [0, 2*n_max]
 }
 
 void build_Z_matrix(double matrix[NM][NM], double complex k_perp) {
-    for (int i = 0; i < NM; i++) {       // loop over rows
-        for (int j = 0; j < NM; j++) {   // loop over columns
-            int n = i - n_max;  // map 0..NM-1 → -n_max..n_max
-            int q = j - n_max;  // map 0..NM-1 → -n_max..n_max
+    for (int i = 0; i < NM; i++) {       
+        for (int j = 0; j < NM; j++) {   
+            int n = i - n_max;  
+            int q = j - n_max;  
 
             double Z_n  = Znu(phi_c, k_perp, n, a_radius);
             double Z_nq = Znq(n, q, k_perp, a_radius, phi_c, phi_i, lmax);
@@ -31,14 +31,14 @@ double compute_det_matrix(int N, double mat[N][N]) {
     int i, j, k;
     double det = 1.0;
 
-    // Copy input matrix
+    // Αντιγραφή πίνακα
     for (i = 0; i < N; i++)
         for (j = 0; j < N; j++)
             A[i][j] = mat[i][j];
 
-    // LU decomposition (no pivoting)
+    // LU αποσύνθεση
     for (k = 0; k < N; k++) {
-        if (fabs(A[k][k]) < 1e-12) return 0.0; // nearly singular
+        if (fabs(A[k][k]) < 1e-12) return 0.0; 
         for (i = k + 1; i < N; i++) {
             double factor = A[i][k] / A[k][k];
             for (j = k; j < N; j++)
@@ -46,14 +46,14 @@ double compute_det_matrix(int N, double mat[N][N]) {
         }
     }
 
-    // determinant = product of diagonal
+    // Υπολογισμός ορίζουσας
     for (i = 0; i < N; i++)
         det *= A[i][i];
     return det;
 }
 
 double compute_det_for_k(double k_perp) {
-    double k_use = k_perp + 0.0*I; // make complex
+    double k_use = k_perp + 0.0*I; 
     double matrix[NM][NM];
     build_Z_matrix(matrix, k_use);
 
@@ -74,30 +74,29 @@ double** create_mat_reduced(double complex k_perp) {
         printf("\n");
     }*/
 
-    // Vector b (last column without first row)
+    // Πίνακα b (τελευταία στήλη χωρίς την πρώτη τιμή)
     double *b = malloc((NM-1) * sizeof(double));
-    for (int i = 1; i <= 2*n_max; i++) { // skip first row
-        b[i-1] = - mat[i][NM-1]; // last column without first value
+    for (int i = 1; i <= 2*n_max; i++) { // παράβλεψη πρώτης σειράς
+        b[i-1] = - mat[i][NM-1]; // τελευταία στήλη
     }
     
     printf("\nVector b:\n");
     for (i = 0; i < NM-1; i++) {
         printf("%lf\n", b[i]);
     }
-
-    // Allocate reduced matrix (size (NM-1)x(NM-1))
+    // Δημιουργία μειωμένου πίνακα (παράβλεψη πρώτης σειράς και τελευταίας στήλης)
     double **reduced = malloc((NM-1) * sizeof(double*));
     for (i = 0; i < NM-1; i++)
         reduced[i] = malloc((NM-1) * sizeof(double));
 
-    // Copy values excluding first row and last column
-    for (i = 1; i < NM; i++) {        // start from 1 to skip first row
-        for (j = 0; j < NM-1; j++) {  // skip last column
+    // Αντιγραφή δεδομένων στον μειωμένο πίνακα
+    for (i = 1; i < NM; i++) {        
+        for (j = 0; j < NM-1; j++) {  
             reduced[i-1][j] = mat[i][j];
         }
     }
 
-    // Print reduced matrix
+    // ΕΚτυπωση μειωμένου πίνακα
     printf("\nReduced matrix:\n");
     for (i = 0; i < NM - 1; i++) {
         for (j = 0; j < NM - 1; j++) {
@@ -106,22 +105,19 @@ double** create_mat_reduced(double complex k_perp) {
         printf("\n");
     }
 
-    // Solve reduced*x = b using Gaussian elimination
+    // Λύση συστήματος Ax = b με μέθοδο Gaussian elimination
     double *x = malloc((NM-1) * sizeof(double));
 
-    // Copy b to avoid modifying original
     double *b_copy = malloc((NM-1) * sizeof(double));
     for (i = 0; i < NM-1; i++) 
         b_copy[i] = b[i];
 
     for (i = 0; i < NM-1; i++) {
-        // Pivot
         int max_row = i;
         for (int k = i+1; k < NM-1; k++)
             if (fabs(reduced[k][i]) > fabs(reduced[max_row][i]))
                 max_row = k;
 
-        // Swap rows
         double *temp_row = reduced[i];
         reduced[i] = reduced[max_row];
         reduced[max_row] = temp_row;
@@ -130,7 +126,6 @@ double** create_mat_reduced(double complex k_perp) {
         b_copy[i] = b_copy[max_row];
         b_copy[max_row] = temp_b;
 
-        // Elimination
         for (int k = i+1; k < NM-1; k++) {
             double factor = reduced[k][i] / reduced[i][i];
             for (j = i; j < NM-1; j++)
@@ -139,7 +134,6 @@ double** create_mat_reduced(double complex k_perp) {
         }
     }
 
-    // Back substitution
     for (i = NM-2; i >= 0; i--) {
         x[i] = b_copy[i];
         for (j = i+1; j < NM-1; j++)

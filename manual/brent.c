@@ -9,33 +9,30 @@ double complex determinant_complex(double complex **M_ptrs, int N_mtx);
 double f(double k_perp, int n_max) {
     int N_mtx = 2 * n_max + 1;
 
-    // Create matrix
     double complex **M = create_matrix(N_mtx, k_perp);
     if (!M) {
         fprintf(stderr, "Error: Could not allocate matrix.\n");
-        return 0.0;  // Or some error code
+        return 0.0;  
     }
 
-    // Convert to pointer array for determinant function
     double complex *M_ptrs[N_mtx];
     for (int i = 0; i < N_mtx; i++)
         M_ptrs[i] = M[i];
 
-    // Compute determinant
     double complex det = determinant_complex(M_ptrs, N_mtx);
     //printf("Debug: For k_perp = %.12f, Determinant = %.10lf + %.10lf i\n", k_perp, creal(det), cimag(det));
 
-    // Free memory
     for (int i = 0; i < N_mtx; i++)
         free(M[i]);
     free(M);
 
-    // Return real part (or absolute value) as the "f(k_perp)"
-    return creal(det);  // or cabs(det) if you want magnitude
+    // Επίστρεψε το πραγματικό μέρος της ρίζας
+    return creal(det); 
 }
 
+// Για δοκιμή, δεν την χρησιμοποιώ
 double f_Other(double k_perp, int n_max) {
-    return k_perp - 1.0;  // or cabs(det) if you want magnitude
+    return k_perp - 1.0;  
 }
 
 double brent(double a, double b, double tol, int n_max) {

@@ -135,7 +135,7 @@ int cbessik01(double complex z,
     return 0;
 }
 
-int msta1(double x, int mp); // Υποθέτουμε ότι έχεις τις συναρτήσεις msta1/msta2 σε C
+int msta1(double x, int mp); 
 int msta2(double x, int n, int mp);
 
 int cbessikna(int n, double complex z, int *nm,
@@ -309,7 +309,6 @@ int cbessiknb(int n, double complex z, int *nm,
     return 0;
 }
 
-// === Υπολογισμός Bessel I_n(z) από cbessikna ===
 double complex besI(int n, double complex z) {
     double complex bsi[MAXN], bsk[MAXN], bsii[MAXN], bskk[MAXN];
     int nm;
@@ -317,7 +316,6 @@ double complex besI(int n, double complex z) {
     return bsi[n];
 }
 
-// === Υπολογισμός Bessel I_n(z) με Taylor series (besIa) ===
 double complex besIa(int n, double complex z) {
     double complex sum = 1.0 + 0.0*I;
     double complex term = 1.0 + 0.0*I;
@@ -339,7 +337,6 @@ double complex besII(int n, double complex z) {
     return bsii[n];
 }
 
-// besIIa σε C
 double complex besIIa(int n, double complex z) {
     // Χρησιμοποιούμε την αναδιατυπωμένη σχέση: I_n' = I_{n+1} + n/z * I_n
     extern double complex besIa(int n, double complex z); // πρέπει να υπάρχει η besIa σε C
@@ -376,7 +373,6 @@ double complex besKK(int n, double complex z) {
     return bskk[n];
 }
 
-// besKKa σε C
 double complex besKKa(int n, double complex z) {
     // Χρησιμοποιούμε τη σχέση: K_n' = -K_{n+1} + n/z * K_n
     extern double complex besKa(int n, double complex z); // πρέπει να υπάρχει η besKa σε C
@@ -392,7 +388,6 @@ int besIK(int n, double complex z, double complex *bi, double complex *bk) {
     return err;
 }
 
-// Υπολογίζει Bessel I_in και K_in για δεδομένο n και z
 int besIIKK(int n, double complex z, double complex *bii, double complex *bkk) {
     double complex bsi[MAXN], bsk[MAXN], bsii[MAXN], bskk[MAXN];
     int err;

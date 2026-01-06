@@ -1,17 +1,14 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include <math.h>  /* for fabs, etc. */
+#include <math.h>  
 
-/* Machine precision and tolerances */
 #define EPS 1e-15
 
-// constants.h
 #ifndef EL
 #define EL 0.5772156649015328606
 #endif
 
-/* Pi-related constants (define only if not already in math.h) */
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -28,7 +25,6 @@
 #define M_PI_4 0.78539816339744830962  /* pi/4 */
 #endif
 
-/* Tiny number to avoid division by zero */
 #define TINY 1.0e-20
 
 #define CONE 1.0 + 0.0*I
@@ -36,7 +32,7 @@
 #define CII 1.0*I
 
 #define MAXN 301
-#define ITMAX 100        /* Maximum allowed number of iterations */
-#define MAXIT 40        /* Maximum allowed number of iterations */
+#define ITMAX 100    
+#define MAXIT 40       
 
-#endif /* CONSTANTS_H */
+#endif 

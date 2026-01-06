@@ -7,12 +7,12 @@
 FvResult F_v(int v, double complex k_perp, double rho) {
     FvResult res;
 
-    if (cimag(k_perp) == 0.0) {  // real -> J_v
+    if (cimag(k_perp) == 0.0) {  // Πραγματικό -> J_v
         double k_real = creal(k_perp);
         res.value = Jnu(v, k_real * rho);
         res.dF    = k_real * Jnp(v, k_real * rho);
         res.Fp    = Jnp(v, k_real * rho);
-    } else {  // imaginary -> I_v
+    } else {  // Φανταστικό -> I_v
         double s = cimag(k_perp);
         res.value = Inu(v, s * rho);
         res.dF    = s * Inp(v, s * rho);
@@ -25,12 +25,12 @@ FvResult F_v(int v, double complex k_perp, double rho) {
 FvResult G_v(int v, double complex k_perp, double rho) {
     FvResult res;
 
-    if (cimag(k_perp) == 0.0) {  // real -> Y_v
+    if (cimag(k_perp) == 0.0) {  // Πραγματικό -> Y_v
         double k_real = creal(k_perp);
         res.value = Ynu(v, k_real * rho);
         res.dF    = k_real * Ynp(v, k_real * rho);
         res.Fp    = Ynp(v, k_real * rho);
-    } else {  // imaginary -> K_v
+    } else {  // Φανταστικό -> K_v
         double s = cimag(k_perp);
         res.value = Knu(v, s * rho);
         res.dF    = s * Knp(v, s * rho);
@@ -41,7 +41,7 @@ FvResult G_v(int v, double complex k_perp, double rho) {
 }
 
 double complex I_alpha_beta(double alpha, double beta, double phi1, double phi2) {
-    double complex result = 0.0 + 0.0*I;  // use 'result', not 'I'
+    double complex result = 0.0 + 0.0*I;  
 
     if (alpha + beta != 0.0) {
         result += (cexp(-I*beta*phi1) * 
@@ -75,11 +75,9 @@ double k_n(int m, int n, double N) {
 }
 
 double O_kl(double kl, double complex k_perp, double rho) {
-    // Compute F and G at rho
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
 
-    // Compute F and G at D (make sure D is defined)
     FvResult F_D   = F_v(kl, k_perp, D_radius);
     FvResult G_D   = G_v(kl, k_perp, D_radius);
 
@@ -88,7 +86,6 @@ double O_kl(double kl, double complex k_perp, double rho) {
     return result;
 }
 
-// Compute derivative dO_kl/drho using precomputed Fp and Gp
 double O_klp(double kl, double complex k_perp, double rho) {
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
@@ -99,8 +96,8 @@ double O_klp(double kl, double complex k_perp, double rho) {
 }
 
 double Znu(double phi_c, double complex k_perp, int n, double rho) {
-    FvResult F = F_v(n, k_perp, rho);  // compute FvResult inside
-    double Fp = F.Fp;                   // extract derivative
+    FvResult F = F_v(n, k_perp, rho);  
+    double Fp = F.Fp;                   
 
     double Zn = phi_c * cabs(k_perp) * Fp;
 
@@ -128,7 +125,7 @@ double Znq(double n, double q, double complex k_perp, double a, double phi_c, do
         S += creal(term);
     }
 
-    FvResult Fq = F_v(q, k_perp, a); // F_{k_q}(k_perp*a)
+    FvResult Fq = F_v(q, k_perp, a); 
     double Znq = 2.0 * Fq.Fp * S / phi_c;
 
     return Znq;

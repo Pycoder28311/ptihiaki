@@ -1,7 +1,7 @@
 #include <math.h>
 #include "constants.h"
 
-int msta1(double x, int mp); // Υποθέτουμε ότι έχεις τις συναρτήσεις msta1/msta2 σε C
+int msta1(double x, int mp);
 int msta2(double x, int n, int mp);
 
 int bessik01a(double x,
@@ -70,7 +70,6 @@ int bessik01a(double x,
 
     x2 = x * x;
 
-    /* I0, I1 */
     if (x <= 18.0) {
         *i0 = 1.0;
         r = 1.0;
@@ -108,7 +107,6 @@ int bessik01a(double x,
         *i1 *= ca;
     }
 
-    /* K0 */
     if (x <= 9.0) {
         ct = -(log(0.5 * x) + EL);
         *k0 = 0.0;
@@ -134,7 +132,6 @@ int bessik01a(double x,
         *k0 *= cb / (*i0);
     }
 
-    /* K1 and derivatives */
     *k1  = (1.0 / x - (*i1) * (*k0)) / (*i0);
     *i0p = *i1;
     *i1p = *i0 - (*i1) / x;
@@ -166,7 +163,6 @@ int bessik01b(double x,
         return 0;
     }
 
-    /* I0, I1 */
     if (x < 3.75) {
         t = x / 3.75;
         t2 = t * t;
@@ -190,7 +186,6 @@ int bessik01b(double x,
         *i1 = dtmp * dtmp1;
     }
 
-    /* K0, K1 */
     if (x < 2.0) {
         t = 0.5 * x;
         t2 = t * t;
@@ -216,7 +211,6 @@ int bessik01b(double x,
         *k1 = dtmp * dtmp1;
     }
 
-    /* derivatives */
     *i0p = *i1;
     *i1p = *i0 - (*i1) / x;
     *k0p = -(*k1);
@@ -251,7 +245,6 @@ int bessikna(int n, double x, int *nm,
 
     *nm = n;
 
-    /* I0, I1, K0, K1 */
     ecode = bessik01a(x,
                       &in[0], &in[1],
                       &kn[0], &kn[1],
@@ -264,7 +257,6 @@ int bessikna(int n, double x, int *nm,
     bi0 = in[0];  bi1 = in[1];
     bk0 = kn[0];  bk1 = kn[1];
 
-    /* I_n */
     if ((x > 40.0) && (n < (int)(0.25 * x))) {
         h0 = bi0;
         h1 = bi1;
@@ -295,7 +287,6 @@ int bessikna(int n, double x, int *nm,
             in[k] *= s0;
     }
 
-    /* K_n */
     g0 = bk0;
     g1 = bk1;
     for (k = 2; k <= *nm; k++) {
@@ -305,7 +296,6 @@ int bessikna(int n, double x, int *nm,
         g1 = g;
     }
 
-    /* derivatives */
     for (k = 2; k <= *nm; k++) {
         inp[k] = in[k - 1] - k * in[k] / x;
         knp[k] = -kn[k - 1] - k * kn[k] / x;
@@ -364,7 +354,6 @@ int bessiknb(int n, double x, int *nm,
     for (k = 0; k <= *nm; k++)
         in[k] *= s0;
 
-    /* K0, K1 */
     if (x <= 8.0) {
         kn[0] = -(log(0.5 * x) + EL) * in[0] + s0 * sk0;
         kn[1] = (1.0 / x - in[1] * kn[0]) / in[0];
@@ -389,7 +378,6 @@ int bessiknb(int n, double x, int *nm,
         }
     }
 
-    /* higher K_n */
     g0 = kn[0];
     g1 = kn[1];
     for (k = 2; k <= *nm; k++) {
@@ -399,7 +387,6 @@ int bessiknb(int n, double x, int *nm,
         g1 = g;
     }
 
-    /* derivatives */
     inp[0] = in[1];
     knp[0] = -kn[1];
     for (k = 1; k <= *nm; k++) {

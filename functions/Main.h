@@ -1,6 +1,5 @@
-// main.c
 #include <complex.h>
-#include "root.h"  // if needed
+#include "root.h"  
 
 double a, A, b, D, L, K, Kn, r, nsp, tol, err, UNITLEN, LD;
 int Iresu, Jresu, M;

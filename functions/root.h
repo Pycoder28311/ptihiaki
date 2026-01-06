@@ -1,8 +1,6 @@
 #ifndef ROOT_H
 #define ROOT_H
 
-/* Root search and root finding routines */
-
 void nrerror(const char *msg);
 
 void riza(double (*func)(double),
@@ -24,4 +22,4 @@ double rtflsp(double (*func)(double),
               double x1, double x2,
               double xacc);
 
-#endif /* ROOT_H */
+#endif 

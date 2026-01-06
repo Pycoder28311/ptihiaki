@@ -8,22 +8,22 @@
 #include "final/utils.h"
 #include "functions/root.h"
 
-#define NM (2*n_max + 1)
+#define NM (2*n_max + 1) //Μέγεθος Πίνακα
 
-// ---------- Main Function ----------
 int main() {
 
     int nr;
-    double roots_initial[100];
+    double roots_initial[100]; // Αρχικός πίνακας ριζών με επαρκώς μεγάλο μέγεθος
 
-    // Example: scan for real k from 0.0 to 20.0
+    // Χρησιμοποιώ τα μεγέθη από το final/globals.h και το functions/root.h για να βρω τις ρίζες της συνάρτησης υπολογισμού ορίζουσας
     riza(compute_det_for_k, down, up, step, tol_riza, &nr, roots_initial);
 
     int valid_nr = 0;
     double roots[100];
 
+    // Απόρριψη ριζών κοντά στο μηδέν
     for (int i = 0; i < nr; i++) {
-        if (fabs(roots_initial[i]) > 1e-15) {  // skip k_perp = 0
+        if (fabs(roots_initial[i]) > 1e-15) { 
             roots[valid_nr++] = roots_initial[i];
         }
     }
@@ -39,7 +39,7 @@ int main() {
 
         build_Z_matrix(matrix, k_perp);
 
-        // Optional: print the matrix
+        // Εκτύπωση του πίνακα για έλεγχο (προαιρετικό)
         /*printf("Matrix (Z_nq - delta_nq * Z_n):\n");
         for (int n = 0; n < N_MAX; n++) {
             for (int q = 0; q < N_MAX; q++) {
@@ -48,11 +48,12 @@ int main() {
             printf("\n");
         }*/
 
-        // Compute determinant
+        // Υπολογισμός και εκτύπωση του ορίζουσας
         double det = compute_det_matrix(NM, matrix);
         printf(" | Determinant: %g\n", det); 
     }
 
+    // Παράδειγμα δημιουργίας πίνακα για την πρώτη ρίζα
     if (nr > 0) {
         double k_real = roots[0];
         double complex k_perp = k_real + 0.0*I;
@@ -71,15 +72,15 @@ int main() {
         create_mat_reduced(k_perp);
     }
 
+    // Παλιός κώδικας με χρήση του head.h
     /*
-        // ----- Root Finding -----
         int max_roots = 10;
         int n_max = 1;
 
-        double xmin = 0.0, xmax = 10.0; // search interval
-        double dx = 1.0;         // scanning step (smaller -> more robust, slower)
-        double tol = 1e-10;        // brent tolerance
-        double tol_zero = 1e-12;  // consider f(x) ~ 0
+        double xmin = 0.0, xmax = 10.0; 
+        double dx = 1.0;         
+        double tol = 1e-10;      // Ακρίβεια εύρεσης ρίζας
+        double tol_zero = 1e-12;  // Ακρίβεια συνάρτησης f(x) ~ 0
         double k_perp[max_roots]; 
 
         FILE *fp = fopen("output.txt", "w");

@@ -4,7 +4,6 @@
 #include <math.h>
 #include <complex.h>
 
-/* Real Bessel-related routines */
 int msta1(double x, int mp);
 int msta2(double x, int n, int mp);
 
@@ -32,7 +31,6 @@ int bessikna(int n, double x, int *nm, double *in, double *kn,
 int bessiknb(int n, double x, int *nm, double *in, double *kn,
              double *inp, double *knp);
 
-/* Complex Bessel routines */
 int cbessjy01(double complex z,
               double complex *cj0, double complex *cj1,
               double complex *cy0, double complex *cy1,
@@ -61,7 +59,6 @@ int cbessiknb(int n, double complex z, int *nm,
               double complex *ci, double complex *ck,
               double complex *cip, double complex *ckp);
 
-/* Convenience wrapper functions */
 double complex besJ(int n, double complex z);
 double complex besJJ(int n, double complex z);
 double complex besY(int n, double complex z);
@@ -87,4 +84,4 @@ int besIK(int n, double complex z,
 int besIIKK(int n, double complex z,
             double complex *bii, double complex *bkk);
 
-#endif /* BESSH */
+#endif 

@@ -4,6 +4,8 @@
 
 #include <gsl/gsl_sf_bessel.h>
 
+// Συναρτήσεις Bessel
+
 double Jnu(double n, double x) {
     if (fabs(x) < 1e-15) return (n == 0.0) ? 1.0 : 0.0;
     return gsl_sf_bessel_Jnu(n, x);
@@ -30,7 +32,7 @@ double Knu(double n, double x) {
     return gsl_sf_bessel_Knu(n, x);
 }
 
-/* ----------- Safe derivatives ----------- */
+// Παράγωγοι των συναρτήσεων Bessel
 
 double Jnp(double n, double x) {
     if (fabs(x) < 1e-15) return 0.0; // derivative at 0

@@ -22,7 +22,6 @@ extern double e0, ei, m0, PI;
 extern char workdir[300];
 extern int maintype;
 
-/* Complex globals */
 extern double complex w, w2, e;
 
 void riza(double (*func)(double),
@@ -96,7 +95,7 @@ void zbrak(double (*fx)(double),
     double x, fp, fc, dx;
 
     nbb = 0;
-    dx = (x2 - x1) / n;      /* Mesh spacing */
+    dx = (x2 - x1) / n;     
     x = x1;
     fp = (*fx)(x);
 
@@ -107,7 +106,6 @@ void zbrak(double (*fx)(double),
         if (fabs(fc) < eps) fc = 0.0;
         if (fabs(fp) < eps) fp = 0.0;
 
-        /* Detect sign change */
         if (fc * fp <= 0.0) {
             xb1[++nbb] = x - dx;
             xb2[nbb]   = x;
@@ -126,7 +124,6 @@ void nrerror(const char *msg) {
     exit(1);
 }
 
-/* NR sign macro */
 static inline double sign(double a)
 {
     return (a >= 0.0) ? 1.0 : -1.0;
@@ -134,8 +131,8 @@ static inline double sign(double a)
 
 double zbrent(double (*func)(double), double x1, double x2, double tol)
 /*
-Using Brent's method, find the root of a function func known to lie between x1 and x2.
-The root is refined until its accuracy is tol.
+Χρησιμοποιώντας τη μέθοδο Brent, βρίσκει τη ρίζα μιας συνάρτησης func,
+η οποία είναι γνωστό ότι βρίσκεται μεταξύ των x1 και x2.
 */
 {
     int iter;
@@ -220,25 +217,24 @@ The root is refined until its accuracy is tol.
     }
 
     nrerror("Maximum number of iterations exceeded in zbrent");
-    return -10.0;   /* Never reached */
+    return -10.0;   
 }
 
 double rtflsp(double (*func)(double), double x1, double x2, double xacc)
 /*
-Using the false position method, find the root of a function func known to lie
-between x1 and x2. The root is refined until its accuracy is xacc.
+Χρησιμοποιώντας τη μέθοδο false position, βρίσκει τη ρίζα μιας συνάρτησης func,
+η οποία είναι γνωστό ότι βρίσκεται μεταξύ των x1 και x2.
 */
 {
     int j;
     double fl, fh, xl, xh, swap, dx, del, f, rtf;
 
     fl = (*func)(x1);
-    fh = (*func)(x2);   /* Be sure the interval brackets a root */
+    fh = (*func)(x2);   
 
     if (fl * fh > 0.0)
         nrerror("Root must be bracketed in rtflsp");
 
-    /* Identify limits so that xl corresponds to the low side */
     if (fl < 0.0) {
         xl = x1;
         xh = x2;
@@ -252,7 +248,7 @@ between x1 and x2. The root is refined until its accuracy is xacc.
 
     dx = xh - xl;
 
-    for (j = 1; j <= MAXIT; j++) {   /* False position loop */
+    for (j = 1; j <= MAXIT; j++) {  
         rtf = xl + dx * fl / (fl - fh);
         f = (*func)(rtf);
 
@@ -269,9 +265,9 @@ between x1 and x2. The root is refined until its accuracy is xacc.
         dx = xh - xl;
 
         if (fabs(del) < xacc || f == 0.0)
-            return rtf;   /* Convergence */
+            return rtf;   
     }
 
     nrerror("Maximum number of iterations exceeded in rtflsp");
-    return 0.0;   /* Never reached */
+    return 0.0;   
 }
