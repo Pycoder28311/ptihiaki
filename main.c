@@ -15,7 +15,7 @@ int main() {
     int nr;
     double roots_initial[100]; // Αρχικός πίνακας ριζών με επαρκώς μεγάλο μέγεθος
 
-    // Χρησιμοποιώ τα μεγέθη από το final/globals.h και το functions/root.h για να βρω τις ρίζες της συνάρτησης υπολογισμού ορίζουσας
+    // Χρησιμοποιώ τα μεγέθη από το final/globals.h και το functions/root.h για να βρω τις ρίζες της συνάρτησης μηδενισμού ορίζουσας
     riza(compute_det_for_k, down, up, step, tol_riza, &nr, roots_initial);
 
     int valid_nr = 0;
