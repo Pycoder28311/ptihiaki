@@ -32,7 +32,7 @@ double k_n(int m, int n, double N);
 double O_kl(double kl, double complex k_perp, double rho);
 double O_klp(double kl, double complex k_perp, double rho);
 
-double Znu(double phi_c, double complex k_perp, int n, double rho);
+double Zn(double phi_c, double complex k_perp, int n, double rho);
 
 double Znq(double n, double q, double complex k_perp,
            double a, double phi_c, double phi_i, int lmax);

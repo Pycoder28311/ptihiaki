@@ -18,7 +18,7 @@ void build_Z_matrix(double matrix[NM][NM], double complex k_perp) {
             int n = i - n_max;  
             int q = j - n_max;  
 
-            double Z_n  = Znu(phi_c, k_perp, n, a_radius);
+            double Z_n  = Zn(phi_c, k_perp, n, a_radius);
             double Z_nq = Znq(n, q, k_perp, a_radius, phi_c, phi_i, lmax);
 
             matrix[i][j] = Z_nq - delta(n, q) * Z_n;

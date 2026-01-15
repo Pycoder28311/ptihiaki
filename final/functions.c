@@ -7,17 +7,17 @@
 FvResult F_v(int v, double complex k_perp, double rho) {
     FvResult res;
 
-    if (cimag(k_perp) == 0.0) {  // Πραγματικό -> J_v
-        double k_real = creal(k_perp);
-        res.value = Jnu(v, k_real * rho);
-        res.dF    = k_real * Jnp(v, k_real * rho);
-        res.Fp    = Jnp(v, k_real * rho);
-    } else {  // Φανταστικό -> I_v
+    //if (cimag(k_perp) == 0.0) {  // Πραγματικό -> J_v
+    double k_real = creal(k_perp);
+    res.value = Jnu(v, k_real * rho);
+    res.dF    = k_real * Jnp(v, k_real * rho);
+    res.Fp    = Jnp(v, k_real * rho);
+    /*} else {  // Φανταστικό -> I_v
         double s = cimag(k_perp);
         res.value = Inu(v, s * rho);
         res.dF    = s * Inp(v, s * rho);
         res.Fp    = Inp(v, s * rho);
-    }
+    }*/
 
     return res;
 }
@@ -25,17 +25,17 @@ FvResult F_v(int v, double complex k_perp, double rho) {
 FvResult G_v(int v, double complex k_perp, double rho) {
     FvResult res;
 
-    if (cimag(k_perp) == 0.0) {  // Πραγματικό -> Y_v
-        double k_real = creal(k_perp);
-        res.value = Ynu(v, k_real * rho);
-        res.dF    = k_real * Ynp(v, k_real * rho);
-        res.Fp    = Ynp(v, k_real * rho);
-    } else {  // Φανταστικό -> K_v
+    //if (cimag(k_perp) == 0.0) {  // Πραγματικό -> Y_v
+    double k_real = creal(k_perp);
+    res.value = Ynu(v, k_real * rho);
+    res.dF    = k_real * Ynp(v, k_real * rho);
+    res.Fp    = Ynp(v, k_real * rho);
+    /*} else {  // Φανταστικό -> K_v
         double s = cimag(k_perp);
         res.value = Knu(v, s * rho);
         res.dF    = s * Knp(v, s * rho);
         res.Fp    = Knp(v, s * rho);
-    }
+    }*/
 
     return res;
 }
@@ -95,7 +95,7 @@ double O_klp(double kl, double complex k_perp, double rho) {
     return F_rho.Fp - (F_D.Fp * G_rho.Fp / G_D.Fp);
 }
 
-double Znu(double phi_c, double complex k_perp, int n, double rho) {
+double Zn(double phi_c, double complex k_perp, int n, double rho) {
     FvResult F = F_v(n, k_perp, rho);  
     double Fp = F.Fp;                   
 
