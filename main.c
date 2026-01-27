@@ -34,6 +34,7 @@ int main() {
         double k_real = roots[i]; 
         double complex k_perp = k_real + 0.0*I; 
         printf("Root %d: %g", i+1, k_real);
+        printf(" frequency: %g", 3e8 * cabs(k_perp) / (2 * M_PI));
 
         double matrix[NM][NM];
 
@@ -50,6 +51,7 @@ int main() {
 
         // Υπολογισμός και εκτύπωση του ορίζουσας
         double det = compute_det_matrix(NM, matrix);
+
         printf(" | Determinant: %g\n", det); 
     }
 

@@ -77,7 +77,7 @@ double** create_mat_reduced(double complex k_perp) {
     // Πίνακα b (τελευταία στήλη χωρίς την πρώτη τιμή)
     double *b = malloc((NM-1) * sizeof(double));
     for (int i = 1; i <= 2*n_max; i++) { // παράβλεψη πρώτης σειράς
-        b[i-1] = - mat[i][NM-1]; // τελευταία στήλη
+        b[i-1] = - mat[i][0]; // τελευταία στήλη
     }
     
     printf("\nVector b:\n");
@@ -91,8 +91,8 @@ double** create_mat_reduced(double complex k_perp) {
 
     // Αντιγραφή δεδομένων στον μειωμένο πίνακα
     for (i = 1; i < NM; i++) {        
-        for (j = 0; j < NM-1; j++) {  
-            reduced[i-1][j] = mat[i][j];
+        for (j = 1; j < NM; j++) {  
+            reduced[i-1][j-1] = mat[i][j];
         }
     }
 
@@ -134,6 +134,7 @@ double** create_mat_reduced(double complex k_perp) {
         }
     }
 
+    // Back-substitution
     for (i = NM-2; i >= 0; i--) {
         x[i] = b_copy[i];
         for (j = i+1; j < NM-1; j++)
@@ -141,10 +142,25 @@ double** create_mat_reduced(double complex k_perp) {
         x[i] /= reduced[i][i];
     }
 
-    printf("\nSolution x:\n");
+    // Find the maximum absolute value
+    double max_val = fabs(x[0]);
+    for (i = 1; i < NM-1; i++) {
+        if (fabs(x[i]) > max_val)
+            max_val = fabs(x[i]);
+    }
+
+    // Normalize so that the largest becomes 1
+    for (i = 0; i < NM-1; i++) {
+        x[i] /= max_val;
+    }
+
+    // Print normalized solution
+    printf("\nNormalized solution x:\n");
+    printf("%lf\n", 1.0 / max_val);
     for (i = 0; i < NM-1; i++)
         printf("%lf\n", x[i]);
     printf("\n");
+
 
     free(b);
     free(b_copy);

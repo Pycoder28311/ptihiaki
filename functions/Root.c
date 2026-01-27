@@ -43,7 +43,6 @@ void riza(double (*func)(double),
 
     if ((down + step > up) && (down < up))
         step = up - down;
-
     for (ea = down; (up - ea) / up > 1.e-10; ea += step) {
 
         if ((ea + step > up) && (ea < up))
@@ -144,7 +143,7 @@ double zbrent(double (*func)(double), double x1, double x2, double tol)
     double tol1, xm, min1, min2;
 
     if ((fa > 0.0 && fb > 0.0) || (fa < 0.0 && fb < 0.0)) {
-        nrerror("Root must be bracketed in zbrent");
+        //printf("Root must be bracketed in zbrent");
         return -11.0;
     }
 
