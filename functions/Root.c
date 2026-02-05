@@ -13,7 +13,7 @@ extern double a, A,
               L,
               K, Kn, r,
               tol, err, UNITLEN, LD;
-double nsp = 1.0;
+double nsp = 1.0; //10.0
 double eps = 1e-12;
 
 extern int Iresu, Jresu, M;

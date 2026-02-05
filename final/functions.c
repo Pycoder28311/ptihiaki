@@ -4,14 +4,13 @@
 #include "utils.h"
 #include "globals.h"
 
-FvResult F_v(int v, double complex k_perp, double rho) {
+FvResult F_v(int v, double k_perp, double rho) {
     FvResult res;
 
     //if (cimag(k_perp) == 0.0) {  // Πραγματικό -> J_v
-    double k_real = creal(k_perp);
-    res.value = Jnu(v, k_real * rho);
-    res.dF    = k_real * Jnp(v, k_real * rho);
-    res.Fp    = Jnp(v, k_real * rho);
+    res.value = Jnu(v, k_perp * rho);
+    res.dF    = k_perp * Jnp(v, k_perp * rho);
+    res.Fp    = Jnp(v, k_perp * rho);
     /*} else {  // Φανταστικό -> I_v
         double s = cimag(k_perp);
         res.value = Inu(v, s * rho);
@@ -22,14 +21,13 @@ FvResult F_v(int v, double complex k_perp, double rho) {
     return res;
 }
 
-FvResult G_v(int v, double complex k_perp, double rho) {
+FvResult G_v(int v, double k_perp, double rho) {
     FvResult res;
 
     //if (cimag(k_perp) == 0.0) {  // Πραγματικό -> Y_v
-    double k_real = creal(k_perp);
-    res.value = Ynu(v, k_real * rho);
-    res.dF    = k_real * Ynp(v, k_real * rho);
-    res.Fp    = Ynp(v, k_real * rho);
+    res.value = Ynu(v, k_perp * rho);
+    res.dF    = k_perp * Ynp(v, k_perp * rho);
+    res.Fp    = Ynp(v, k_perp * rho);
     /*} else {  // Φανταστικό -> K_v
         double s = cimag(k_perp);
         res.value = Knu(v, s * rho);
@@ -74,7 +72,7 @@ double k_n(int m, int n, double N) {
     return m + n * N;
 }
 
-double O_kl(double kl, double complex k_perp, double rho) {
+double O_kl(double kl, double k_perp, double rho) {
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
 
@@ -86,7 +84,7 @@ double O_kl(double kl, double complex k_perp, double rho) {
     return result;
 }
 
-double O_klp(double kl, double complex k_perp, double rho) {
+double O_klp(double kl, double k_perp, double rho) {
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
     FvResult F_D   = F_v(kl, k_perp, D_radius);
@@ -95,16 +93,16 @@ double O_klp(double kl, double complex k_perp, double rho) {
     return F_rho.Fp - (F_D.Fp * G_rho.Fp / G_D.Fp);
 }
 
-double Zn(double phi_c, double complex k_perp, int n, double rho) {
+double Zn(double phi_c, double k_perp, int n, double rho) {
     FvResult F = F_v(n, k_perp, rho);  
     double Fp = F.Fp;                   
 
-    double Zn = phi_c * cabs(k_perp) * Fp;
+    double Zn = phi_c * k_perp * Fp;
 
     return Zn;
 }
 
-double Znq(double n, double q, double complex k_perp, double a, double phi_c, double phi_i, int lmax) {
+double Znq(double n, double q, double k_perp, double a, double phi_c, double phi_i, int lmax) {
     double S = 0.0;
 
     double kn = k_n(m, n, N);
@@ -126,7 +124,7 @@ double Znq(double n, double q, double complex k_perp, double a, double phi_c, do
     }
 
     FvResult Fq = F_v(q, k_perp, a); 
-    double Znq = 2.0 * Fq.Fp * S / phi_c;
+    double Znq = k_perp * 2.0 * Fq.Fp * S / phi_c;
 
     return Znq;
 }

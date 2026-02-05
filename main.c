@@ -31,10 +31,9 @@ int main() {
     printf("\nFound %d roots for k_perp\n\n", valid_nr);
 
     for (int i = 0; i < valid_nr; i++) { 
-        double k_real = roots[i]; 
-        double complex k_perp = k_real + 0.0*I; 
-        printf("Root %d: %lf", i+1, k_real);
-        printf(" frequency: %g", 3e8 * cabs(k_perp) / (2 * M_PI));
+        double k_perp = roots[i]; 
+        printf("Root %d: %lf", i+1, k_perp);
+        printf(" frequency: %g", 3e8 * k_perp / (2 * M_PI));
 
         double matrix[NM][NM];
 
@@ -55,8 +54,8 @@ int main() {
         printf(" | Determinant: %g\n", det); 
     }
 
-    for (double i = 0.0; i < 10.0; i += 1.0) { 
-        double complex k_perp = i + 0.0*I; 
+    for (double i = 0.0; i < 10.0; i += 0.1) { 
+        double k_perp = i; 
         printf("Testing k_perp = %g", i);
 
         double matrix[NM][NM];
@@ -80,9 +79,8 @@ int main() {
 
     // Παράδειγμα δημιουργίας πίνακα για την πρώτη ρίζα
     if (nr > 0) {
-        double k_real = roots[0];
-        double complex k_perp = k_real + 0.0*I;
-        printf("\nMatrix for first root (k_perp = %g):\n", k_real);
+        double k_perp = roots[0];
+        printf("\nMatrix for first root (k_perp = %g):\n", k_perp);
 
         double matrix[NM][NM];
         build_Z_matrix(matrix, k_perp);

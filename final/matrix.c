@@ -12,7 +12,7 @@ static inline int IDX(int n) {
     return n + n_max;   // Χάρτης από [-n_max, +n_max] σε [0, 2*n_max]
 }
 
-void build_Z_matrix(double matrix[NM][NM], double complex k_perp) {
+void build_Z_matrix(double matrix[NM][NM], double k_perp) {
     for (int i = 0; i < NM; i++) {       
         for (int j = 0; j < NM; j++) {   
             int n = i - n_max;  
@@ -53,14 +53,13 @@ double compute_det_matrix(int N, double mat[N][N]) {
 }
 
 double compute_det_for_k(double k_perp) {
-    double k_use = k_perp + 0.0*I; 
     double matrix[NM][NM];
-    build_Z_matrix(matrix, k_use);
+    build_Z_matrix(matrix, k_perp);
 
     return compute_det_matrix(NM, matrix);
 }
 
-double** create_mat_reduced(double complex k_perp) {
+double** create_mat_reduced(double k_perp) {
     double mat[NM][NM];
     int i, j;
 
