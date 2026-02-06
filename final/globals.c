@@ -12,4 +12,4 @@ const int n_max = 2;               // Διαστάσεις Πίνακα 1
 const double down = 0.0;           // Κάτω όριο για riza 0.0
 const double up = 20.0;            // Άνω όριο για riza 3000.0
 const double step = 0.01;           // Βήμα για riza 20.0
-const double tol_riza = 0.000001;      // Ακρίβεια για riza
+const double tol_riza = 0.00001;      // Ακρίβεια για riza
