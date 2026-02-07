@@ -8,9 +8,36 @@
 #include "final/utils.h"
 #include "functions/root.h"
 
+#include <stdio.h>
+#include <gsl/gsl_sf_bessel.h>
+
 #define NM (2*n_max + 1) //Μέγεθος Πίνακα
 
+double bessel_Jv(double v, double x) {
+    double sum = 0.0;
+    double term;
+    int m = 0;
+    const double tol = 1e-12; // stopping tolerance
+
+    do {
+        term = pow(-1, m) * pow(x/2.0, 2*m + v) / (tgamma(m+1) * tgamma(m+v+1));
+        sum += term;
+        m++;
+    } while (fabs(term) > tol && m < 1000); // stop if term is small or iterations exceed 1000
+
+    return sum;
+}
+
 int main() {
+    double x = 2.243353455;
+    double n = -1.5432543;  // non-integer order
+
+    double jn = gsl_sf_bessel_Jnu(n, x);
+
+    printf("Bessel J_%g(%g) = %.16f\n", n, x, jn);
+    double J = bessel_Jv(n, x);
+
+    printf("Bessel J_%g(%g) = %.16f\n", n, x, J);
 
     int nr;
     double roots_initial[100]; // Αρχικός πίνακας ριζών με επαρκώς μεγάλο μέγεθος
@@ -54,7 +81,7 @@ int main() {
         printf(" | Determinant: %g\n", det); 
     }
 
-    for (double i = 0.0; i < 10.0; i += 0.1) { 
+    /*for (double i = 0.0; i < 10.0; i += 0.1) { 
         double k_perp = i; 
         printf("Testing k_perp = %g", i);
 
@@ -63,19 +90,19 @@ int main() {
         build_Z_matrix(matrix, k_perp);
 
         // Εκτύπωση του πίνακα για έλεγχο (προαιρετικό)
-        /*printf("Matrix (Z_nq - delta_nq * Z_n):\n");
+        printf("Matrix (Z_nq - delta_nq * Z_n):\n");
         for (int n = 0; n < N_MAX; n++) {
             for (int q = 0; q < N_MAX; q++) {
                 printf("%10.6f ", matrix[n][q]);
             }
             printf("\n");
-        }*/
+        }
 
         // Υπολογισμός και εκτύπωση του ορίζουσας
         double det = compute_det_matrix(NM, matrix);
 
         printf(" | Determinant: %g\n", det); 
-    }
+    }*/
 
     // Παράδειγμα δημιουργίας πίνακα για την πρώτη ρίζα
     if (nr > 0) {
