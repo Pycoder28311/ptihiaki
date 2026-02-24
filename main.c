@@ -13,47 +13,101 @@
 
 #define NM (2*n_max + 1) //Μέγεθος Πίνακα
 
-double bessel_Jv(double v, double x) {
-    double sum = 0.0;
-    double term;
-    int m = 0;
-    const double tol = 1e-12; // stopping tolerance
+double bessel(double x, int n) {
+    return (gsl_sf_bessel_Jn(n-1, x) - gsl_sf_bessel_Jn(n+1, x)) / 2.0;
+}
 
-    do {
-        term = pow(-1, m) * pow(x/2.0, 2*m + v) / (tgamma(m+1) * tgamma(m+v+1));
-        sum += term;
-        m++;
-    } while (fabs(term) > tol && m < 1000); // stop if term is small or iterations exceed 1000
+double my_function(double x) {
+    return compute_det_for_k(x);
+}
 
-    return sum;
+double derivative(double (*f)(double), double x, double h) {
+    return (f(x + h) - f(x - h)) / (2.0 * h);
+}
+
+double my_function_derivative(double x) {
+    double h = 1e-6; // μικρό βήμα για τη διαφορική προσέγγιση
+    return derivative(compute_det_for_k, x, h);
+}
+
+int cmp_double(const void *a, const void *b) {
+    double da = *(double*)a;
+    double db = *(double*)b;
+    if (da < db) return -1;
+    else if (da > db) return 1;
+    else return 0;
+}
+
+#define MAX_ROOTS 200
+#define TOL 1e-4
+double roots[MAX_ROOTS];
+int valid_nr = 0;
+int nr = 0;
+
+int compute_all_roots(double *all_roots, int max_size) {
+    int nr_deriv;
+    double roots_deriv[100];
+
+    // Ρίζες της παραγώγου
+    riza(my_function_derivative, down, up, step, tol_riza, &nr_deriv, roots_deriv);
+
+    // Φιλτράρισμα για f(x) ~ 0
+    int valid_nr_deriv = 0;
+    double roots_deriv_valid[100];
+    for(int i = 0; i < nr_deriv; i++) {
+        double fx = compute_det_for_k(roots_deriv[i]);
+        if(fabs(fx) < TOL && fabs(roots_deriv[i]) > 1e-15) {
+            roots_deriv_valid[valid_nr_deriv++] = roots_deriv[i];
+        }
+    }
+
+    // Ρίζες της αρχικής συνάρτησης
+    //int nr;
+    double roots_initial[100];
+    riza(compute_det_for_k, down, up, step, tol_riza, &nr, roots_initial);
+
+    int valid_nr_initial = 0;
+    double roots_initial_valid[100];
+    for(int i = 0; i < nr; i++) {
+        if(fabs(roots_initial[i]) > 1e-15) {
+            roots_initial_valid[valid_nr_initial++] = roots_initial[i];
+        }
+    }
+
+    // Ενώνουμε τις δύο λίστες και αποθηκεύουμε global
+    valid_nr = 0;
+    for(int i = 0; i < valid_nr_deriv; i++) {
+        roots[valid_nr++] = roots_deriv_valid[i];
+    }
+    for(int i = 0; i < valid_nr_initial; i++) {
+        if(valid_nr >= MAX_ROOTS) break;
+        roots[valid_nr++] = roots_initial_valid[i];
+    }
+
+    // Αν θέλεις ταξινόμηση
+    for(int i = 0; i < valid_nr - 1; i++) {
+        for(int j = i+1; j < valid_nr; j++) {
+            if(roots[i] > roots[j]) {
+                double tmp = roots[i];
+                roots[i] = roots[j];
+                roots[j] = tmp;
+            }
+        }
+    }
+
+    // Αν θέλεις να έχεις και το all_roots array ξεχωριστά
+    for(int i = 0; i < valid_nr && i < max_size; i++) {
+        all_roots[i] = roots[i];
+    }
+
+    return valid_nr;
 }
 
 int main() {
-    double x = 2.243353455;
-    double n = -1.5432543;  // non-integer order
+    double all_roots[MAX_ROOTS];
 
-    double jn = gsl_sf_bessel_Jnu(n, x);
-
-    printf("Bessel J_%g(%g) = %.16f\n", n, x, jn);
-    double J = bessel_Jv(n, x);
-
-    printf("Bessel J_%g(%g) = %.16f\n", n, x, J);
-
-    int nr;
-    double roots_initial[100]; // Αρχικός πίνακας ριζών με επαρκώς μεγάλο μέγεθος
-
-    // Χρησιμοποιώ τα μεγέθη από το final/globals.h και το functions/root.h για να βρω τις ρίζες της συνάρτησης μηδενισμού ορίζουσας
-    riza(compute_det_for_k, down, up, step, tol_riza, &nr, roots_initial);
-
-    int valid_nr = 0;
-    double roots[100];
-
-    // Απόρριψη ριζών κοντά στο μηδέν
-    for (int i = 0; i < nr; i++) {
-        if (fabs(roots_initial[i]) > 1e-15) { 
-            roots[valid_nr++] = roots_initial[i];
-        }
-    }
+    // Υπολογίζουμε όλες τις ρίζες και ταξινομούμε
+    compute_all_roots(all_roots, MAX_ROOTS);
 
     printf("\nFound %d roots for k_perp\n\n", valid_nr);
 

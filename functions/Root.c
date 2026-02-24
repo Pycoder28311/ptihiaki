@@ -105,7 +105,7 @@ void zbrak(double (*fx)(double),
         if (fabs(fc) < eps) fc = 0.0;
         if (fabs(fp) < eps) fp = 0.0;
 
-        if (fc * fp <= 0.0) {
+        if (fp * fc < 0) {
             xb1[++nbb] = x - dx;
             xb2[nbb]   = x;
 
