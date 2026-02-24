@@ -1,11 +1,11 @@
 #include "globals.h"
 
 const double a_radius = 0.01;       // Μικρή ακτίνα 1.0e-2
-const double D_radius = 0.0100001;       // Μεγάλη ακτίνα 1.00001e-2
-const double N = 10.0;             // Αριθμός ραβδώσεων
-const double phi_c = 0.314;          // Γωνία αυλάκωσης
+const double D_radius = 0.010001;       // Μεγάλη ακτίνα 1.00001e-2
+const double N = 100.0;             // Αριθμός ραβδώσεων
+const double phi_c = 0.01;          // Γωνία αυλάκωσης
 const double phi_i = 0.0;          // Γωνία εισόδου
-const int lmax = 1;               // Μέγιστο l για το S 2
+const int lmax = 0;               // Μέγιστο l για το S 2
 const double m = 1.0;              // Σταθερά m ρυθμού
  
 const int n_max = 1;               // Διαστάσεις Πίνακα 1
