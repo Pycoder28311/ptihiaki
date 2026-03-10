@@ -72,29 +72,30 @@ double k_n(int m, int n, double N) {
     return m + n * N;
 }
 
-double O_kl(double kl, double k_perp, double rho) {
+double O_kl(double kl, double k_perp, double rho, double D) {
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
 
-    FvResult F_D   = F_v(kl, k_perp, D_radius);
-    FvResult G_D   = G_v(kl, k_perp, D_radius);
+    FvResult F_D   = F_v(kl, k_perp, D);
+    FvResult G_D   = G_v(kl, k_perp, D);
 
     double result = (F_rho.value * G_D.Fp - F_D.Fp * G_rho.value) / G_D.Fp;
 
     return result;
 }
 
-double O_klp(double kl, double k_perp, double rho) {
+double O_klp(double kl, double k_perp, double rho, double D) {
     FvResult F_rho = F_v(kl, k_perp, rho);
     FvResult G_rho = G_v(kl, k_perp, rho);
-    FvResult F_D   = F_v(kl, k_perp, D_radius);
-    FvResult G_D   = G_v(kl, k_perp, D_radius);
+    FvResult F_D   = F_v(kl, k_perp, D);
+    FvResult G_D   = G_v(kl, k_perp, D);
 
     return F_rho.Fp - (F_D.Fp * G_rho.Fp / G_D.Fp);
 }
 
-double Zn(double phi_c, double k_perp, int n, double rho) {
-    FvResult F = F_v(n, k_perp, rho);  
+double Zn(double phi_c, double k_perp, int n, double rho, double D) {
+    int kn = k_n(m, n, N);
+    FvResult F = F_v(kn, k_perp, rho);  
     double Fp = F.Fp;                   
 
     double Zn = phi_c * k_perp * Fp;
@@ -102,7 +103,7 @@ double Zn(double phi_c, double k_perp, int n, double rho) {
     return Zn;
 }
 
-double Znq(double n, double q, double k_perp, double a, double phi_c, double phi_i, int lmax) {
+double Znq(double n, double q, double k_perp, double a, double phi_c, double phi_i, int lmax, double D) {
     double S = 0.0;
 
     double kn = k_n(m, n, N);
@@ -111,8 +112,8 @@ double Znq(double n, double q, double k_perp, double a, double phi_c, double phi
     for (int l = 0; l <= lmax; l++) {
         double kl = k_l(l, phi_c);
 
-        double O_kl_a = O_kl(kl, k_perp, a);
-        double O_kl_a_p = O_klp(kl, k_perp, a);
+        double O_kl_a = O_kl(kl, k_perp, a, D);
+        double O_kl_a_p = O_klp(kl, k_perp, a, D);
 
         double complex I1 = I_alpha_beta(kq, kl, phi_i, phi_i + phi_c);
         double complex I2 = I_alpha_beta(-kn, kl, phi_i, phi_i + phi_c);

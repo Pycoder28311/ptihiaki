@@ -24,10 +24,10 @@ extern int maintype;
 
 extern double complex w, w2, e;
 
-void riza(double (*func)(double),
+void riza(double (*func)(double, double),
           double down, double up,
           double step1, double tol,
-          int *nr, double rizes[])
+          int *nr, double rizes[], double D)
 {
     int nroot, nw, ier;
     int Nmaxt, Mmaxt;
@@ -52,7 +52,7 @@ void riza(double (*func)(double),
         zx2 = ea + step;
         nroot = 500;
 
-        zbrak(func, zx1, zx2, nsp, xb1, xb2, &nroot);
+        zbrak(func, zx1, zx2, nsp, xb1, xb2, &nroot, D);
 
         if (nroot != 0) {
 
@@ -60,14 +60,14 @@ void riza(double (*func)(double),
 
                 x1 = xb1[nw];
                 x2 = xb2[nw];
-                root = zbrent(func, x1, x2, tol);
+                root = zbrent(func, x1, x2, tol, D);
 
                 if (root <= 0.0)
                     continue;
 
-                fa = func(root - step / 20.0 / nsp);
-                fb = func(root);
-                fc = func(root + step / 20.0 / nsp);
+                fa = func(root - step / 20.0 / nsp, D);
+                fb = func(root, D);
+                fc = func(root + step / 20.0 / nsp, D);
 
                 ier = 0;
 
@@ -84,11 +84,11 @@ void riza(double (*func)(double),
     }
 }
 
-void zbrak(double (*fx)(double),
+void zbrak(double (*fx)(double, double),
            double x1, double x2,
            int n,
            double xb1[], double xb2[],
-           int *nb)
+           int *nb, double D)
 {
     int nbb, i;
     double x, fp, fc, dx;
@@ -96,11 +96,11 @@ void zbrak(double (*fx)(double),
     nbb = 0;
     dx = (x2 - x1) / n;     
     x = x1;
-    fp = (*fx)(x);
+    fp = (*fx)(x, D);
 
     for (i = 1; i <= n; i++) {
         x += dx;
-        fc = (*fx)(x);
+        fc = (*fx)(x, D);
 
         if (fabs(fc) < eps) fc = 0.0;
         if (fabs(fp) < eps) fp = 0.0;
@@ -128,7 +128,7 @@ static inline double sign(double a)
     return (a >= 0.0) ? 1.0 : -1.0;
 }
 
-double zbrent(double (*func)(double), double x1, double x2, double tol)
+double zbrent(double (*func)(double, double), double x1, double x2, double tol, double D)
 /*
 Χρησιμοποιώντας τη μέθοδο Brent, βρίσκει τη ρίζα μιας συνάρτησης func,
 η οποία είναι γνωστό ότι βρίσκεται μεταξύ των x1 και x2.
@@ -137,8 +137,8 @@ double zbrent(double (*func)(double), double x1, double x2, double tol)
     int iter;
     double aa = x1, b = x2, c = x2;
     double d = 0.0, e = 0.0;
-    double fa = (*func)(aa);
-    double fb = (*func)(b);
+    double fa = (*func)(aa, D);
+    double fb = (*func)(b, D);
     double fc, p, q, r, s;
     double tol1, xm, min1, min2;
 
@@ -212,14 +212,14 @@ double zbrent(double (*func)(double), double x1, double x2, double tol)
         else
             b += sign(tol1) * xm;
 
-        fb = (*func)(b);
+        fb = (*func)(b, D);
     }
 
     nrerror("Maximum number of iterations exceeded in zbrent");
     return -10.0;   
 }
 
-double rtflsp(double (*func)(double), double x1, double x2, double xacc)
+double rtflsp(double (*func)(double, double), double x1, double x2, double xacc, double D)
 /*
 Χρησιμοποιώντας τη μέθοδο false position, βρίσκει τη ρίζα μιας συνάρτησης func,
 η οποία είναι γνωστό ότι βρίσκεται μεταξύ των x1 και x2.
@@ -228,8 +228,8 @@ double rtflsp(double (*func)(double), double x1, double x2, double xacc)
     int j;
     double fl, fh, xl, xh, swap, dx, del, f, rtf;
 
-    fl = (*func)(x1);
-    fh = (*func)(x2);   
+    fl = (*func)(x1, D);
+    fh = (*func)(x2, D);   
 
     if (fl * fh > 0.0)
         nrerror("Root must be bracketed in rtflsp");
@@ -249,7 +249,7 @@ double rtflsp(double (*func)(double), double x1, double x2, double xacc)
 
     for (j = 1; j <= MAXIT; j++) {  
         rtf = xl + dx * fl / (fl - fh);
-        f = (*func)(rtf);
+        f = (*func)(rtf, D);
 
         if (f < 0.0) {
             del = xl - rtf;

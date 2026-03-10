@@ -12,21 +12,21 @@ static inline int IDX(int n) {
     return n + n_max;   // Χάρτης από [-n_max, +n_max] σε [0, 2*n_max]
 }
 
-void build_Z_matrix(double matrix[NM][NM], double k_perp) {
+void build_Z_matrix(double matrix[NM][NM], double k_perp, double D) {
     for (int i = 0; i < NM; i++) {       
         for (int j = 0; j < NM; j++) {   
             int n = i - n_max;  
             int q = j - n_max;  
 
-            double Z_n  = Zn(phi_c, k_perp, n, a_radius);
-            double Z_nq = Znq(n, q, k_perp, a_radius, phi_c, phi_i, lmax);
+            double Z_n  = Zn(phi_c, k_perp, n, a_radius, D);
+            double Z_nq = Znq(n, q, k_perp, a_radius, phi_c, phi_i, lmax, D);
 
             matrix[i][j] = Z_nq - delta(n, q) * Z_n;
         }
     }
 }
 
-double compute_det_matrix(int N, double mat[N][N]) {
+double compute_det_matrix(int N, double mat[N][N], double D) {
     double A[N][N];
     int i, j, k;
     double det = 1.0;
@@ -52,18 +52,18 @@ double compute_det_matrix(int N, double mat[N][N]) {
     return det;
 }
 
-double compute_det_for_k(double k_perp) {
+double compute_det_for_k(double k_perp, double D) {
     double matrix[NM][NM];
-    build_Z_matrix(matrix, k_perp);
+    build_Z_matrix(matrix, k_perp, D);
 
-    return compute_det_matrix(NM, matrix);
+    return compute_det_matrix(NM, matrix, D);
 }
 
-double** create_mat_reduced(double k_perp) {
+double** create_mat_reduced(double k_perp, double D) {
     double mat[NM][NM];
     int i, j;
 
-    build_Z_matrix(mat, k_perp);
+    build_Z_matrix(mat, k_perp, D);
 
     /*printf("Initial matrix (full):\n");
     for (int n = -n_max; n <= n_max; n++) {

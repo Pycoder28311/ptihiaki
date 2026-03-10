@@ -8,6 +8,8 @@
 
 double Jnu(double n, double x) {
     if (fabs(x) < 1e-15) return (n == 0.0) ? 1.0 : 0.0;
+    if (n > 20.0)
+        return 0.0;
     return gsl_sf_bessel_Jnu(n, x);
 }
 
@@ -17,6 +19,7 @@ double Ynu(double n, double x) {
         return NAN;
     }
     return gsl_sf_bessel_Ynu(n, x);
+    
 }
 
 double Inu(double n, double x) {
